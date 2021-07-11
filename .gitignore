@@ -50,3 +50,30 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Vim temporary files
+*.swp
+
+#Autotools files
+Makefile
+Makefile.in
+/aclocal.m4
+/autom4te.cache/
+m4/libtool.m4
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4
+/config.*
+/configure
+/ar-lib
+/compile
+/install-sh
+/ltmain.sh
+/missing
+/stamp-h?
+.deps/
+.dirstamp
+*.o
+*~
+test-driver
