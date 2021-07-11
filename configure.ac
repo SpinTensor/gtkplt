@@ -31,5 +31,6 @@ PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.0])
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([src/Makefile])
+AC_CONFIG_FILES([test/Makefile])
 
 AC_OUTPUT
