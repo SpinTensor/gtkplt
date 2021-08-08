@@ -1,4 +1,4 @@
-AC_INIT([gtkcairoplot], [0.0.1], [demfuhlseine-mail@gmx.de])
+AC_INIT([gtkplt], [0.0.1], [demfuhlseine-mail@gmx.de])
 : ${CFLAGS="-O3"}
 
 # Will be generated

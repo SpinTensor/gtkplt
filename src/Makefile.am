@@ -1,10 +1,10 @@
-lib_LTLIBRARIES = libgtkcairoplot.la
+lib_LTLIBRARIES = libgtkplt.la
 
-include_HEADERS = gtkcairoplot.h
+include_HEADERS = gtkplt.h
 
-libgtkcairoplot_la_SOURCES = gtkcairoplot.c
-libgtkcairoplot_la_CFLAGS = @GTK_CFLAGS@
-libgtkcairoplot_la_CFLAGS += -g -Wall -Wextra -Wpedantic
-libgtkcairoplot_la_CXXFLAGS =
-libgtkcairoplot_la_FCFLAGS =
-libgtkcairoplot_la_LDFLAGS = @GTK_LIBS@ -rdynamic -lm
+libgtkplt_la_SOURCES = gtkplt.c
+libgtkplt_la_CFLAGS = @GTK_CFLAGS@
+libgtkplt_la_CFLAGS += -g -Wall -Wextra -Wpedantic
+libgtkplt_la_CXXFLAGS =
+libgtkplt_la_FCFLAGS =
+libgtkplt_la_LDFLAGS = @GTK_LIBS@ -rdynamic -lm

@@ -1,16 +1,16 @@
 AM_CFLAGS = @GTK_CFLAGS@ -g -Wall -Wextra -Wpedantic
 AM_CFLAGS += -I$(top_srcdir)/src/
 
-AM_LDFLAGS = -L$(top_builddir)/src/.libs -lgtkcairoplot
+AM_LDFLAGS = -L$(top_builddir)/src/.libs -lgtkplt
 AM_LDFLAGS += @GTK_LIBS@ -rdynamic -lm
 
-check_PROGRAMS = test
+check_PROGRAMS = gtk
 
-test_SOURCES = test.c
-test_CFLAGS = $(AM_CFLAGS)
-test_LDFLAGS = $(AM_LDFLAGS)
+gtk_SOURCES = gtk.c
+gtk_CFLAGS = $(AM_CFLAGS)
+gtk_LDFLAGS = $(AM_LDFLAGS)
 
-dist_noinst_SCRIPTS = test.sh
+dist_noinst_SCRIPTS = gtk.sh
 
 TEST_EXTENSIONS = .sh
 SH_LOG_COMPILER = $(SHELL)

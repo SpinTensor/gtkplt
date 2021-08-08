@@ -2,6 +2,6 @@
 
 set -x
 
-binary=test
+binary=gtk
 
 ./${binary} || exit 1
