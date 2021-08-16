@@ -14,7 +14,7 @@ gint main(int argc,char *argv[]) {
                       GTK_WIDGET(plot));
     gtk_widget_set_size_request(GTK_WIDGET(plot), 200, 100);
     gtk_widget_show_all(GTK_WIDGET(window));
-    gtk_main ();
+    gtk_main();
     return 0;
 }
 
