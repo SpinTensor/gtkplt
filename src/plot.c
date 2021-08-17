@@ -23,4 +23,14 @@ void gtkplt_finalize_plot(GtkPltPlotData *plotdata_ptr) {
 }
 
 void gtkplt_plot(GtkWidget *widget, cairo_t *cr, GtkPltPlotData *plotdata_ptr) {
+   guint width = gtk_widget_get_allocated_width(widget);
+   guint height = gtk_widget_get_allocated_height(widget);
+
+   // set background to white
+   cairo_set_source_rgba(cr,
+                         1.0,
+                         1.0,
+                         1.0,
+                         1.0);
+   cairo_paint(cr);
 }
