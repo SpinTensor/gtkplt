@@ -13,7 +13,8 @@ extern "C" {
 // Type structure to hold data for the plots
 enum en_labelorientation {
    horizontal,
-   vertical,
+   vertical_up,
+   vertical_down,
    diagonal_up,
    diagonal_down
 };
@@ -21,7 +22,7 @@ enum en_labelorientation {
 typedef struct {
    double xpos, ypos;
    int fontsize;
-   char *fontname;
+   char *font;
    char *text;
    enum en_labelorientation orientation;
 } GtkPltPlotLabel;
@@ -65,14 +66,14 @@ typedef struct {
    enum en_plottype plottype;
    char *title;
    char *titlefont;
-   int *titlefontsize;
+   int titlefontsize;
    bool show_in_legend;
 } GtkPltPlotDataSet;
 
 typedef struct {
    unsigned int ndatasets;
    GtkPltPlotDataSet *datasets;
-   GtkPltPlotLegend legend;
+   GtkPltPlotLegend *legend;
    unsigned int nlabels;
    GtkPltPlotLabel *labels;
 } GtkPltPlotPlotArea;
@@ -83,7 +84,7 @@ enum en_axisscale {
 };
 
 typedef struct {
-   enum en_axisscale axisscale;
+   enum en_axisscale scale;
    unsigned int nmajortics;
    unsigned int nminortics;
    double range[2];
@@ -94,8 +95,8 @@ typedef struct {
 } GtkPltPlotAxis;
 
 typedef struct {
-   GtkPltPlotPlotArea PlotArea;
-   GtkPltPlotAxis Axis[2];
+   GtkPltPlotPlotArea *PlotArea;
+   GtkPltPlotAxis *Axis;
 } GtkPltPlotData;
 
 G_BEGIN_DECLS
