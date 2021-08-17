@@ -21,13 +21,17 @@ static void gtkplt_plot_init(GtkPltPlot *plot) {
    plot->drawingarea = GTK_DRAWING_AREA(gtk_drawing_area_new());
    gtk_widget_show(GTK_WIDGET(plot->drawingarea));
 
+   plot->data = gtkplt_init_plot();
    g_signal_connect(G_OBJECT(plot),
                     "draw",
                     G_CALLBACK(_gtkplt_plot_on_draw),
-                    (gpointer) &(plot->data));
+                    (gpointer) plot->data);
 }
 
 static void _gtkplt_plot_finalize(GObject *self) {
+   GtkPltPlot *plot_ptr = (GtkPltPlot*) self;
+   gtkplt_finalize_plot(plot_ptr->data);
+   plot_ptr->data = NULL;
    G_OBJECT_CLASS(gtkplt_plot_parent_class)->finalize(self);
 }
 

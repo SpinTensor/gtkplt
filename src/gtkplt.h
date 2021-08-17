@@ -1,12 +1,102 @@
 #ifndef __GTKPLT_H__
 #define __GTKPLT_H__
 
+#include <stdbool.h>
+
 #include <gtk/gtk.h>
 
 // Handle C++ includes
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
+
+// Type structure to hold data for the plots
+enum en_labelorientation {
+   horizontal,
+   vertical,
+   diagonal_up,
+   diagonal_down
+};
+
+typedef struct {
+   double xpos, ypos;
+   int fontsize;
+   char *fontname;
+   char *text;
+   enum en_labelorientation orientation;
+} GtkPltPlotLabel;
+
+typedef struct {
+   double xpos, ypos;
+} GtkPltPlotLegend;
+
+enum en_lineshape {
+   solid,
+   dotted,
+   densly_dotted,
+   loosely_dotted,
+   dashed,
+   densly_dashed,
+   loosely_dashed,
+   dashdotted,
+   densly_dashdotted,
+   loosely_dashdotted,
+   filled
+};
+
+enum en_plottype {
+   points,
+   line,
+   linepoints,
+   bar
+};
+
+typedef struct {
+   int nvals;
+   double *xvals;
+   double *yvals;
+   bool has_xerrvals;
+   double *xerrvals;
+   bool has_yerrvals;
+   double *yerrvals;
+   double RGBcolor[3];
+   enum en_lineshape lineshape;
+   unsigned char linewidth;
+   enum en_plottype plottype;
+   char *title;
+   char *titlefont;
+   int *titlefontsize;
+   bool show_in_legend;
+} GtkPltPlotDataSet;
+
+typedef struct {
+   unsigned int ndatasets;
+   GtkPltPlotDataSet *datasets;
+   GtkPltPlotLegend legend;
+   unsigned int nlabels;
+   GtkPltPlotLabel *labels;
+} GtkPltPlotPlotArea;
+
+enum en_axisscale {
+   linear,
+   log
+};
+
+typedef struct {
+   enum en_axisscale axisscale;
+   unsigned int nmajortics;
+   unsigned int nminortics;
+   double range[2];
+   char *label;
+   char *labelfont;
+   int labelfontsize;
+   enum en_labelorientation labelorientation;
+} GtkPltPlotAxis;
+
+typedef struct {
+   GtkPltPlotPlotArea PlotArea;
+   GtkPltPlotAxis Axis[2];
+} GtkPltPlotData;
 
 G_BEGIN_DECLS
 
@@ -30,25 +120,16 @@ G_BEGIN_DECLS
                               GTKPLT_PLOT_TYPE, \
                               GtkPltPlotClass))
 
-typedef struct _GtkPltPlotData    GtkPltPlotData;
-typedef struct _GtkPltPlot        GtkPltPlot;
-typedef struct _GtkPltPlotClass   GtkPltPlotClass;
-typedef struct _GtkPltPlotPrivate GtkPltPlotPrivate;
-
-struct _GtkPltPlotData {
-   int a;
-};
-
-struct _GtkPltPlot {
+typedef struct {
    GtkDrawingArea parent;
 
    GtkDrawingArea *drawingarea;
    GtkPltPlotData *data;
-};
+} GtkPltPlot;
 
-struct _GtkPltPlotClass {
+typedef struct {
    GtkDrawingAreaClass parent_class;
-};
+} GtkPltPlotClass;
 
 // Public API
 GType gtkplt_plot_get_type(void) G_GNUC_CONST;
