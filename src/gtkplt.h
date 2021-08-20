@@ -11,12 +11,12 @@ extern "C" {
 #endif // __cplusplus
 
 // Type structure to hold data for the plots
-enum en_labelorientation {
-   horizontal,
-   vertical_up,
-   vertical_down,
-   diagonal_up,
-   diagonal_down
+enum gtkplt_en_labelorientation {
+   gtkplt_horizontal,
+   gtkplt_vertical_up,
+   gtkplt_vertical_down,
+   gtkplt_diagonal_up,
+   gtkplt_diagonal_down
 };
 
 typedef struct {
@@ -24,35 +24,37 @@ typedef struct {
    int fontsize;
    char *font;
    char *text;
-   enum en_labelorientation orientation;
+   enum gtkplt_en_labelorientation orientation;
 } GtkPltPlotLabel;
 
 typedef struct {
    double xpos, ypos;
 } GtkPltPlotLegend;
 
-enum en_lineshape {
-   solid,
-   dotted,
-   densly_dotted,
-   loosely_dotted,
-   dashed,
-   densly_dashed,
-   loosely_dashed,
-   dashdotted,
-   densly_dashdotted,
-   loosely_dashdotted,
-   filled
+enum gtkplt_en_lineshape {
+   gtkplt_solid,
+   gtkplt_dotted,
+   gtkplt_densly_dotted,
+   gtkplt_loosely_dotted,
+   gtkplt_dashed,
+   gtkplt_densly_dashed,
+   gtkplt_loosely_dashed,
+   gtkplt_dashdotted,
+   gtkplt_densly_dashdotted,
+   gtkplt_loosely_dashdotted,
+   gtkplt_filled
 };
 
-enum en_plottype {
-   points,
-   line,
-   linepoints,
-   bar
+enum gtkplt_en_plottype {
+   gtkplt_points,
+   gtkplt_line,
+   gtkplt_linepoints,
+   gtkplt_bar
 };
 
 typedef struct {
+   unsigned int ID;
+   bool valid;
    int nvals;
    double *xvals;
    double *yvals;
@@ -61,9 +63,9 @@ typedef struct {
    bool has_yerrvals;
    double *yerrvals;
    double RGBcolor[3];
-   enum en_lineshape lineshape;
+   enum gtkplt_en_lineshape lineshape;
    unsigned char linewidth;
-   enum en_plottype plottype;
+   enum gtkplt_en_plottype plottype;
    char *title;
    char *titlefont;
    int titlefontsize;
@@ -78,20 +80,20 @@ typedef struct {
    GtkPltPlotLabel *labels;
 } GtkPltPlotPlotArea;
 
-enum en_axisscale {
-   linear,
-   log
+enum gtkplt_en_axisscale {
+   gtkplt_linear,
+   gtkplt_log
 };
 
 typedef struct {
-   enum en_axisscale scale;
+   enum gtkplt_en_axisscale scale;
    unsigned int nmajortics;
    unsigned int nminortics;
    double range[2];
    char *label;
    char *labelfont;
    int labelfontsize;
-   enum en_labelorientation labelorientation;
+   enum gtkplt_en_labelorientation labelorientation;
 } GtkPltPlotAxis;
 
 typedef struct {
@@ -135,6 +137,8 @@ typedef struct {
 // Public API
 GType gtkplt_plot_get_type(void) G_GNUC_CONST;
 GtkWidget *gtkplt_plot_new(void);
+
+unsigned int gtkplt_add_graph(GtkPltPlot *plot, int nvals, double *xvals, double *yvals);
 
 G_END_DECLS
 

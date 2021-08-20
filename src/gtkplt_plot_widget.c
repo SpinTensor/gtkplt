@@ -40,9 +40,11 @@ GtkWidget *gtkplt_plot_new() {
 }
 
 gboolean _gtkplt_plot_on_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
-   GtkPltPlotData *plotdata_ptr = (GtkPltPlotData*) data;
 
-   gtkplt_plot(widget, cr, plotdata_ptr);
+   guint width = gtk_widget_get_allocated_width(widget);
+   guint height = gtk_widget_get_allocated_height(widget);
+
+   gtkplt_plot(cr, (GtkPltPlotData*) data, width, height);
 
    return FALSE;
 }
