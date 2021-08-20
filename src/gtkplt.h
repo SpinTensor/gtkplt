@@ -68,11 +68,11 @@ typedef struct {
    char *titlefont;
    int titlefontsize;
    bool show_in_legend;
-} GtkPltPlotDataSet;
+} GtkPltPlotGraph;
 
 typedef struct {
-   unsigned int ndatasets;
-   GtkPltPlotDataSet *datasets;
+   unsigned int ngraphs;
+   GtkPltPlotGraph *graphs;
    GtkPltPlotLegend *legend;
    unsigned int nlabels;
    GtkPltPlotLabel *labels;

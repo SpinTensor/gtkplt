@@ -7,7 +7,7 @@ libgtkplt_la_SOURCES = gtkplt_plot_widget.c \
 		       axis.c \
 		       plotarea.c \
 		       legend.c \
-		       datasets.c \
+		       graphs.c \
 		       labels.c
 libgtkplt_la_CFLAGS = @GTK_CFLAGS@
 libgtkplt_la_CFLAGS += -g -Wall -Wextra -Wpedantic
