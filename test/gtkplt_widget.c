@@ -13,7 +13,10 @@ gint main(int argc,char *argv[]) {
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     
     plot = GTKPLT_PLOT(gtkplt_plot_new());
-    int nvals = 50;
+    double xmin = -1.0;
+    double xmax = 6.0;
+    double dx = 0.5;
+    int nvals = (xmax-xmin) / dx + 0.5;
     double *xvals = (double*) malloc(nvals*sizeof(double));
     double *yvals = (double*) malloc(nvals*sizeof(double));
     for (int i=0; i<nvals; i++) {
@@ -27,7 +30,7 @@ gint main(int argc,char *argv[]) {
     yvals = NULL;
     gtk_container_add(GTK_CONTAINER(window),
                       GTK_WIDGET(plot));
-    gtk_widget_set_size_request(GTK_WIDGET(plot), 200, 100);
+    gtk_widget_set_size_request(GTK_WIDGET(plot), 1024, 768);
     gtk_widget_show_all(GTK_WIDGET(window));
     gtk_main();
     return 0;

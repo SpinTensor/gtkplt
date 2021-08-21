@@ -9,7 +9,6 @@
 
    void gtkplt_finalize_plot(GtkPltPlotData *plotdata_ptr);
    
-   void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data,
-                    guint width, guint height);
+   void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data);
 
 #endif

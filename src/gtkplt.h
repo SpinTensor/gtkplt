@@ -94,9 +94,22 @@ typedef struct {
    char *labelfont;
    int labelfontsize;
    enum gtkplt_en_labelorientation labelorientation;
+   double axis_width;
+   double axis_label_dist;
 } GtkPltPlotAxis;
 
 typedef struct {
+   double left_margin;
+   double right_margin;
+   double top_margin;
+   double bottom_margin;
+   char *title;
+   char *titlefont;
+   int titlefontsize;
+   double title_height;
+   double title_margin;
+   double widget_width;
+   double widget_height;
    GtkPltPlotPlotArea *PlotArea;
    GtkPltPlotAxis *Axis;
 } GtkPltPlotData;

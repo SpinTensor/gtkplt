@@ -84,12 +84,12 @@ unsigned int gtkplt_add_graph(GtkPltPlot *plot, int nvals,
 }
 
 void gtkplt_plot_graph(cairo_t *cr, GtkPltPlotData *data,
-                       GtkPltPlotGraph *graph,
-                       guint width, guint height) {
+                       GtkPltPlotGraph *graph) {
+
 
    for (int i=0; i<graph->nvals; i++) {
-      double rx = width/10.0*graph->xvals[i];
-      double ry = height/10.0*graph->yvals[i];
+      double rx = data->widget_width/10.0*graph->xvals[i];
+      double ry = data->widget_height/10.0*graph->yvals[i];
       cairo_set_source_rgb(cr,
                            graph->RGBcolor[0],
                            graph->RGBcolor[1],

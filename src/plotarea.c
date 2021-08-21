@@ -4,6 +4,9 @@
 #include "legend.h"
 #include "graphs.h"
 #include "labels.h"
+#include "margins.h"
+#include "title.h"
+#include "axis.h"
 
 GtkPltPlotPlotArea *gtkplt_plotarea_init() {
    GtkPltPlotPlotArea *plotarea = (GtkPltPlotPlotArea*) malloc(sizeof(GtkPltPlotPlotArea));
@@ -37,4 +40,17 @@ void gtkplt_plotarea_finalize(GtkPltPlotPlotArea *plotarea_ptr) {
    }
    plotarea_ptr->nlabels = 0;
    free(plotarea_ptr);
+}
+
+double gtkplt_plotarea_xmin(GtkPltPlotData *data) {
+   return gtkplt_yaxis_area_xmax(data);
+}
+double gtkplt_plotarea_xmax(GtkPltPlotData *data) {
+   return gtkplt_ormargin_xmin(data);
+}
+double gtkplt_plotarea_ymin(GtkPltPlotData *data) {
+   return gtkplt_tbmargin_ymax(data);
+}
+double gtkplt_plotarea_ymax(GtkPltPlotData *data) {
+   return gtkplt_xaxis_area_ymin(data);
 }

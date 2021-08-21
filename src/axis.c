@@ -1,6 +1,9 @@
 #include <stdlib.h>
 
 #include "gtkplt.h"
+#include "margins.h"
+#include "title.h"
+#include "axis.h"
 
 GtkPltPlotAxis *gtkplt_axis_init() {
    GtkPltPlotAxis *axis = (GtkPltPlotAxis*) malloc(2*sizeof(GtkPltPlotAxis));
@@ -13,6 +16,8 @@ GtkPltPlotAxis *gtkplt_axis_init() {
       axis[iaxis].label = NULL;
       axis[iaxis].labelfont = NULL;
       axis[iaxis].labelfontsize = 12;
+      axis[iaxis].axis_width = 40;
+      axis[iaxis].axis_label_dist = 10;
    }
    axis[0].labelorientation = gtkplt_horizontal;
    axis[1].labelorientation = gtkplt_vertical_up;
@@ -32,4 +37,30 @@ void gtkplt_axis_finalize(GtkPltPlotAxis *axis_ptr) {
       }
    }
    free(axis_ptr);
+}
+
+double gtkplt_xaxis_area_xmin(GtkPltPlotData *data) {
+   return gtkplt_yaxis_area_xmax(data);
+}
+double gtkplt_xaxis_area_xmax(GtkPltPlotData *data) {
+   return gtkplt_ormargin_xmin(data);
+}
+double gtkplt_xaxis_area_ymin(GtkPltPlotData *data) {
+   return gtkplt_xaxis_area_ymax(data)-data->Axis[0].axis_width;
+}
+double gtkplt_xaxis_area_ymax(GtkPltPlotData *data) {
+   return gtkplt_obmargin_ymin(data);
+}
+
+double gtkplt_yaxis_area_xmin(GtkPltPlotData *data) {
+   return gtkplt_olmargin_xmax(data);
+}
+double gtkplt_yaxis_area_xmax(GtkPltPlotData *data) {
+   return gtkplt_yaxis_area_xmin(data) + data->Axis[1].axis_width;
+}
+double gtkplt_yaxis_area_ymin(GtkPltPlotData *data) {
+   return gtkplt_tbmargin_ymax(data);
+}
+double gtkplt_yaxis_area_ymax(GtkPltPlotData *data) {
+   return gtkplt_xaxis_area_ymin(data);
 }

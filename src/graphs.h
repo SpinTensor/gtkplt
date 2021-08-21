@@ -8,7 +8,6 @@
    void gtkplt_graphs_finalize(GtkPltPlotGraph *graphs_ptr);
 
    void gtkplt_plot_graph(cairo_t *cr, GtkPltPlotData *data,
-                          GtkPltPlotGraph *graph,
-                          guint width, guint height);
+                          GtkPltPlotGraph *graph);
 
 #endif
