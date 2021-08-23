@@ -10,7 +10,10 @@
 
 GtkPltPlotData *gtkplt_init_plot() {
    GtkPltPlotData *plotdata_ptr = (GtkPltPlotData*) malloc(sizeof(GtkPltPlotData));
-   plotdata_ptr->Axis = gtkplt_axis_init();
+   plotdata_ptr->xaxis = gtkplt_axis_init();
+   plotdata_ptr->xaxis->labelorientation =  gtkplt_horizontal;
+   plotdata_ptr->yaxis = gtkplt_axis_init();
+   plotdata_ptr->yaxis->labelorientation = gtkplt_vertical_up;
    plotdata_ptr->PlotArea = gtkplt_plotarea_init();
    double default_margin = 5;
    plotdata_ptr->left_margin = default_margin;
@@ -27,8 +30,10 @@ GtkPltPlotData *gtkplt_init_plot() {
 }
 
 void gtkplt_finalize_plot(GtkPltPlotData *plotdata_ptr) {
-   gtkplt_axis_finalize(plotdata_ptr->Axis);
-   plotdata_ptr->Axis = NULL;
+   gtkplt_axis_finalize(plotdata_ptr->xaxis);
+   plotdata_ptr->xaxis = NULL;
+   gtkplt_axis_finalize(plotdata_ptr->yaxis);
+   plotdata_ptr->yaxis = NULL;
    gtkplt_plotarea_finalize(plotdata_ptr->PlotArea);
    plotdata_ptr->PlotArea = NULL;
    free(plotdata_ptr);

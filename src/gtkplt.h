@@ -111,7 +111,8 @@ typedef struct {
    double widget_width;
    double widget_height;
    GtkPltPlotPlotArea *PlotArea;
-   GtkPltPlotAxis *Axis;
+   GtkPltPlotAxis *xaxis;
+   GtkPltPlotAxis *yaxis;
 } GtkPltPlotData;
 
 G_BEGIN_DECLS
