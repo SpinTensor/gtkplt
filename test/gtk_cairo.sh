@@ -4,4 +4,4 @@ set -x
 
 binary=gtk_cairo
 
-./${binary} || exit 1
+./${binary} timeout || exit 1
