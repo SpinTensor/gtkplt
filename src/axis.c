@@ -5,6 +5,9 @@
 #include "title.h"
 #include "axis.h"
 
+const double majorticks_width = 3.0;
+const double minorticks_width = 1.0;
+
 GtkPltPlotAxis *gtkplt_axis_init() {
    GtkPltPlotAxis *axis = (GtkPltPlotAxis*) malloc(2*sizeof(GtkPltPlotAxis));
    for (int iaxis=0; iaxis<2; iaxis++) {
@@ -65,21 +68,43 @@ double gtkplt_yaxis_area_ymax(GtkPltPlotData *data) {
    return gtkplt_xaxis_area_ymin(data);
 }
 
-void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
+void gtkplt_plot_draw_xaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
+   // minimum is two ticks
+   int nticks = data->Axis[0].nmajortics < 2 ? 2 : data->Axis[0].nmajortics;
 
-   const double majorticks_width = 3.0;
-   const double minorticks_width = 1.0;
+   double tickspacing ;
+   tickspacing = gtkplt_xaxis_area_xmax(data) - gtkplt_xaxis_area_xmin(data);
+   tickspacing /= nticks - 1;
+
+   double xminpos = gtkplt_xaxis_area_xmin(data);
+   double xmaxpos = gtkplt_xaxis_area_xmax(data);
+   double yminpos = gtkplt_xaxis_area_ymin(data);
+   double ymaxpos = yminpos + 3*majorticks_width;
+
+   for (int itick=0; itick<= nticks; itick++) {
+      double x = xminpos + itick*tickspacing;
+      cairo_move_to(cr, x, yminpos);
+      cairo_line_to(cr, x, ymaxpos);
+   }
+
+   cairo_stroke(cr);
+}
+
+void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
 
    // draw axis frame
    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
    cairo_set_line_width(cr, majorticks_width);
    // top line
-   cairo_move_to(cr, gtkplt_yaxis_area_xmax(data), gtkplt_yaxis_area_ymin(data));
-   cairo_line_to(cr, gtkplt_ormargin_xmin(data), gtkplt_yaxis_area_ymin(data));
-   cairo_line_to(cr, gtkplt_ormargin_xmin(data), gtkplt_yaxis_area_ymax(data));
-   cairo_line_to(cr, gtkplt_yaxis_area_xmax(data), gtkplt_yaxis_area_ymax(data));
+   cairo_move_to(cr, gtkplt_xaxis_area_xmin(data), gtkplt_yaxis_area_ymin(data));
+   cairo_line_to(cr, gtkplt_xaxis_area_xmax(data), gtkplt_yaxis_area_ymin(data));
+   cairo_line_to(cr, gtkplt_xaxis_area_xmax(data), gtkplt_yaxis_area_ymax(data));
+   cairo_line_to(cr, gtkplt_xaxis_area_xmin(data), gtkplt_yaxis_area_ymax(data));
    cairo_close_path(cr);
 
    cairo_stroke(cr);
+
+   // dtaw ticks
+   gtkplt_plot_draw_xaxis_majorticks(cr, data);
 
 }
