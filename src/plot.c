@@ -7,6 +7,7 @@
 #include "plotarea.h"
 #include "graphs.h"
 #include "margins.h"
+#include "title.h"
 
 GtkPltPlotData *gtkplt_init_plot() {
    GtkPltPlotData *plotdata_ptr = (GtkPltPlotData*) malloc(sizeof(GtkPltPlotData));
@@ -21,10 +22,10 @@ GtkPltPlotData *gtkplt_init_plot() {
    plotdata_ptr->top_margin = default_margin;
    plotdata_ptr->bottom_margin = default_margin;
    plotdata_ptr->title = NULL;
-   plotdata_ptr->titlefont = NULL;
-   plotdata_ptr->titlefontsize = 0;
-   plotdata_ptr->title_height = 12;
-   plotdata_ptr->title_margin = 4;
+   plotdata_ptr->titlefont = "Helvetica";
+   plotdata_ptr->titlefontsize = 18;
+   plotdata_ptr->title_height = 0;
+   plotdata_ptr->title_margin = 0;
 
    return plotdata_ptr;
 }
@@ -113,20 +114,23 @@ void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data) {
    gtkplt_plot_margins_debug(cr, data);
 #endif
 
-   // draw title
+   // set title extent
+   gtkplt_plot_set_title_margins(cr, data);
 
    // draw axis
    gtkplt_plot_draw_axis(cr, data);
 
-   // draw graphs
-   // TODO: correct upper bound
-   for (int i=0; i<1; i++) {
-      if (data->PlotArea->graphs[i].valid) {
-         gtkplt_plot_graph(cr,
-                           data,
-                           data->PlotArea->graphs+i);
-      }
-   }
+   // draw title
+   gtkplt_plot_draw_title(cr, data);
+
+//   // draw graphs
+//   for (int i=0; i<1; i++) {
+//      if (data->PlotArea->graphs[i].valid) {
+//         gtkplt_plot_graph(cr,
+//                           data,
+//                           data->PlotArea->graphs+i);
+//      }
+//   }
 
    // draw legend
    

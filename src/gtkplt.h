@@ -154,6 +154,12 @@ GtkWidget *gtkplt_plot_new(void);
 
 unsigned int gtkplt_add_graph(GtkPltPlot *plot, int nvals, double *xvals, double *yvals);
 
+// Title appearance
+void gtkplt_set_title(GtkPltPlot *plot, const char *title);
+void gtkplt_remove_title(GtkPltPlot *plot);
+void gtkplt_set_title_font(GtkPltPlot *plot, const char *font);
+void gtkplt_set_title_fontsize(GtkPltPlot *plot, int fontsize);
+
 G_END_DECLS
 
 #ifdef __cplusplus
