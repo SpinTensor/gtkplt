@@ -5,6 +5,11 @@
 #include <gtkplt.h>
 
 int main(int argc,char *argv[]) {
+   bool auto_terminate = false;
+   if (argc > 1) {
+      auto_terminate = (strcmp(argv[1], "timeout") == 0);
+   }
+
    GtkWindow *window;
    GtkPltPlot *plot;
 
@@ -34,6 +39,9 @@ int main(int argc,char *argv[]) {
    gtkplt_set_title(plot, "Titletext!");
 
    gtk_widget_set_size_request(GTK_WIDGET(plot), 420, 380);
+   if (auto_terminate) {
+      g_timeout_add_seconds(5, (GSourceFunc) gtk_main_quit, NULL);
+   }
    gtk_widget_show_all(GTK_WIDGET(window));
    gtk_main();
    return 0;

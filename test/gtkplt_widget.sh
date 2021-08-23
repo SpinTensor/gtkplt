@@ -4,4 +4,4 @@ set -x
 
 binary=gtkplt_widget
 
-./${binary} || exit 1
+./${binary} timeout || exit 1
