@@ -11,8 +11,8 @@ const double minorticks_width = 1.5;
 GtkPltPlotAxis *gtkplt_axis_init() {
    GtkPltPlotAxis *axis = (GtkPltPlotAxis*) malloc(sizeof(GtkPltPlotAxis));
    axis->scale = gtkplt_linear;
-   axis->nmajortics = 10;
-   axis->nminortics = 4;
+   axis->nmajorticks = 10;
+   axis->nminorticks = 4;
    axis->range[0] = 0.0;
    axis->range[1] = 10.0;
    axis->label = NULL;
@@ -68,7 +68,7 @@ void gtkplt_plot_draw_yaxis_minorticks(cairo_t *cr, GtkPltPlotData *data,
                                        double xmaxpos) {
    double xminpos = xmaxpos - 1.5*majorticks_width;
 
-   int nticks = data->yaxis->nminortics < 0 ? 0 : data->yaxis->nminortics;
+   int nticks = data->yaxis->nminorticks < 0 ? 0 : data->yaxis->nminorticks;
 
    double tickspacing;
    tickspacing = ymaxpos - yminpos;
@@ -85,7 +85,7 @@ void gtkplt_plot_draw_yaxis_minorticks(cairo_t *cr, GtkPltPlotData *data,
 void gtkplt_plot_draw_yaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
    
    // minimum is two ticks
-   int nticks = data->yaxis->nmajortics < 2 ? 2 : data->yaxis->nmajortics;
+   int nticks = data->yaxis->nmajorticks < 2 ? 2 : data->yaxis->nmajorticks;
 
    double yminpos = gtkplt_yaxis_area_ymin(data);
    double ymaxpos = gtkplt_yaxis_area_ymax(data);
@@ -115,7 +115,7 @@ void gtkplt_plot_draw_xaxis_minorticks(cairo_t *cr, GtkPltPlotData *data,
                                        double yminpos) {
    double ymaxpos = yminpos + 1.5*majorticks_width;
 
-   int nticks = data->xaxis->nminortics < 0 ? 0 : data->xaxis->nminortics;
+   int nticks = data->xaxis->nminorticks < 0 ? 0 : data->xaxis->nminorticks;
 
    double tickspacing;
    tickspacing = xmaxpos - xminpos;
@@ -132,7 +132,7 @@ void gtkplt_plot_draw_xaxis_minorticks(cairo_t *cr, GtkPltPlotData *data,
 void gtkplt_plot_draw_xaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
    
    // minimum is two ticks
-   int nticks = data->xaxis->nmajortics < 2 ? 2 : data->xaxis->nmajortics;
+   int nticks = data->xaxis->nmajorticks < 2 ? 2 : data->xaxis->nmajorticks;
 
    double xminpos = gtkplt_xaxis_area_xmin(data);
    double xmaxpos = gtkplt_xaxis_area_xmax(data);

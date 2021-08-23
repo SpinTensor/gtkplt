@@ -39,7 +39,8 @@ void gtkplt_remove_title(GtkPltPlot *plot) {
 
 void gtkplt_set_title_font(GtkPltPlot *plot, const char *font) {
    GtkPltPlotData *data = plot->data;
-   data->titlefont = font;
+   free(data->titlefont);
+   data->titlefont = strdup(font);
 }
 
 void gtkplt_set_title_fontsize(GtkPltPlot *plot, int fontsize) {

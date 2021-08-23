@@ -22,7 +22,7 @@ GtkPltPlotData *gtkplt_init_plot() {
    plotdata_ptr->top_margin = default_margin;
    plotdata_ptr->bottom_margin = default_margin;
    plotdata_ptr->title = NULL;
-   plotdata_ptr->titlefont = "Helvetica";
+   plotdata_ptr->titlefont = strdup("Helvetica");
    plotdata_ptr->titlefontsize = 18;
    plotdata_ptr->title_height = 0;
    plotdata_ptr->title_margin = 0;
@@ -37,6 +37,10 @@ void gtkplt_finalize_plot(GtkPltPlotData *plotdata_ptr) {
    plotdata_ptr->yaxis = NULL;
    gtkplt_plotarea_finalize(plotdata_ptr->PlotArea);
    plotdata_ptr->PlotArea = NULL;
+   if (plotdata_ptr->title != NULL) {
+      free(plotdata_ptr->title);
+   }
+   free(plotdata_ptr->titlefont);
    free(plotdata_ptr);
 }
 
