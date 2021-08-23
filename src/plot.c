@@ -114,14 +114,12 @@ void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data) {
    gtkplt_plot_margins_debug(cr, data);
 #endif
 
-   // set title extent
-   gtkplt_plot_set_title_margins(cr, data);
+   // draw titel
+   gtkplt_plot_draw_title(cr, data);
 
    // draw axis
    gtkplt_plot_draw_axis(cr, data);
 
-   // draw title
-   gtkplt_plot_draw_title(cr, data);
 
 //   // draw graphs
 //   for (int i=0; i<1; i++) {
@@ -135,5 +133,4 @@ void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data) {
    // draw legend
    
    // draw labels
-
 }

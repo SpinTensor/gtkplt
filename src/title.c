@@ -47,7 +47,7 @@ void gtkplt_set_title_fontsize(GtkPltPlot *plot, int fontsize) {
    data->titlefontsize = fontsize;
 }
 
-void gtkplt_plot_set_title_margins(cairo_t *cr, GtkPltPlotData *data) {
+void gtkplt_plot_draw_title(cairo_t *cr, GtkPltPlotData *data) {
    if (data->title == NULL) {
       // no title
       // set title area to zero height
@@ -68,20 +68,14 @@ void gtkplt_plot_set_title_margins(cairo_t *cr, GtkPltPlotData *data) {
       data->title_margin = extents.height*0.5;
       // set the title height
       data->title_height = extents.height;
+
+      double xcenter = 0.5*(gtkplt_ttmargin_xmin(data) + gtkplt_ttmargin_xmax(data));
+      double ycenter = 0.5*(gtkplt_tbmargin_ymin(data) + gtkplt_ttmargin_ymax(data));
+
+      cairo_move_to(cr,
+                    xcenter - extents.width*0.5,
+                    ycenter + extents.height*0.25);
+      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+      cairo_show_text(cr, data->title);
    }
-}
-
-void gtkplt_plot_draw_title(cairo_t *cr, GtkPltPlotData *data) {
-   double xcenter = 0.5*(gtkplt_ttmargin_xmin(data) + gtkplt_ttmargin_xmax(data));
-   double ycenter = 0.5*(gtkplt_tbmargin_ymin(data) + gtkplt_ttmargin_ymax(data));
-
-   // get the extent of the text about to displayed.
-   cairo_text_extents_t extents;
-   cairo_text_extents(cr, data->title, &extents);
-
-   cairo_move_to(cr,
-                 xcenter - extents.width*0.5,
-                 ycenter + extents.height*0.25);
-   cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-   cairo_show_text(cr, data->title);
 }
