@@ -87,8 +87,8 @@ enum gtkplt_en_axisscale {
 
 typedef struct {
    enum gtkplt_en_axisscale scale;
-   unsigned int nmajortics;
-   unsigned int nminortics;
+   int nmajortics;
+   int nminortics;
    double range[2];
    char *label;
    char *labelfont;
