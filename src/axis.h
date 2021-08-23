@@ -17,4 +17,5 @@ double gtkplt_yaxis_area_xmax(GtkPltPlotData *data);
 double gtkplt_yaxis_area_ymin(GtkPltPlotData *data);
 double gtkplt_yaxis_area_ymax(GtkPltPlotData *data);
 
+void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data);
 #endif

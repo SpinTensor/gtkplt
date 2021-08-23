@@ -91,23 +91,6 @@ void gtkplt_plot_margins_debug(cairo_t *cr, GtkPltPlotData *data) {
    cairo_stroke_preserve(cr);
    cairo_fill(cr);
 
-//   // Axis dist space
-//   cairo_set_source_rgb(cr, 0.0/255.0, 0.0/255.0, 200.0/255.0);
-//   cairo_rectangle(cr,
-//                   data->left_margin,
-//                   data->top_margin+2*data->title_margin+data->title_height,
-//                   data->left_margin+data->Axis[0].axis_width,
-//                   height-data->top_margin-2*data->title_margin-data->title_height-data->Axis[1].axis_width-data->Axis[1].axis_label_dist-data->bottom_margin);
-//   cairo_rectangle(cr,
-//                   data->left_margin+data->Axis[0].axis_width+data->Axis[0].axis_label_dist,
-//                   height-data->bottom_margin-data->Axis[1].axis_width,
-//                   data->left_margin+data->Axis[0].axis_width,
-//                   data->Axis[1].axis_width);
-//   cairo_stroke_preserve(cr);
-//   cairo_fill(cr);
-
-
-
 }
 
 void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data) {
@@ -128,6 +111,7 @@ void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data) {
    // draw title
 
    // draw axis
+   gtkplt_plot_draw_axis(cr, data);
 
    // draw graphs
    // TODO: correct upper bound

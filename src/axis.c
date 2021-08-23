@@ -64,3 +64,22 @@ double gtkplt_yaxis_area_ymin(GtkPltPlotData *data) {
 double gtkplt_yaxis_area_ymax(GtkPltPlotData *data) {
    return gtkplt_xaxis_area_ymin(data);
 }
+
+void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
+
+   const double majorticks_width = 3.0;
+   const double minorticks_width = 1.0;
+
+   // draw axis frame
+   cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+   cairo_set_line_width(cr, majorticks_width);
+   // top line
+   cairo_move_to(cr, gtkplt_yaxis_area_xmax(data), gtkplt_yaxis_area_ymin(data));
+   cairo_line_to(cr, gtkplt_ormargin_xmin(data), gtkplt_yaxis_area_ymin(data));
+   cairo_line_to(cr, gtkplt_ormargin_xmin(data), gtkplt_yaxis_area_ymax(data));
+   cairo_line_to(cr, gtkplt_yaxis_area_xmax(data), gtkplt_yaxis_area_ymax(data));
+   cairo_close_path(cr);
+
+   cairo_stroke(cr);
+
+}
