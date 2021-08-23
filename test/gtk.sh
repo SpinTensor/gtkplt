@@ -4,4 +4,4 @@ set -x
 
 binary=gtk
 
-./${binary} || exit 1
+./${binary} timeout || exit 1
