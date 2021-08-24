@@ -10,7 +10,8 @@ libgtkplt_la_SOURCES = gtkplt_plot_widget.c \
 		       graphs.c \
 		       labels.c \
 		       margins.c \
-		       title.c
+		       title.c \
+		       text.c
 libgtkplt_la_CFLAGS = @GTK_CFLAGS@
 libgtkplt_la_CFLAGS += -g -Wall -Wextra -Wpedantic
 libgtkplt_la_CXXFLAGS =
