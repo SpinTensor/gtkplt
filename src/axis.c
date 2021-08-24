@@ -4,6 +4,7 @@
 #include "margins.h"
 #include "title.h"
 #include "axis.h"
+#include "text.h"
 
 GtkPltPlotAxis *gtkplt_axis_init() {
    GtkPltPlotAxis *axis = (GtkPltPlotAxis*) malloc(sizeof(GtkPltPlotAxis));
@@ -15,7 +16,7 @@ GtkPltPlotAxis *gtkplt_axis_init() {
    axis->range[1] = 10.0;
    axis->title = NULL;
    axis->titlefont = strdup("Helvetica");
-   axis->titlefontsize = 12;
+   axis->titlefontsize = 18;
    axis->labelfont = strdup("Helvetica");
    axis->labelfontsize = 12;
    axis->titlewidth = 0.0;
@@ -218,8 +219,45 @@ void gtkplt_plot_draw_xaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
    }
 }
 
-void gtkplt_plot_configure_axis_placement(cairo_t *cr, GtkPltPlotData *data) {
+void gtkplt_plot_draw_xaxis_title(cairo_t *cr, GtkPltPlotData *data) {
+   double xpos = 0.5*(gtkplt_xaxis_area_xmax(data) + gtkplt_xaxis_area_xmin(data));
+   double ypos = gtkplt_xaxis_area_ymax(data) - 0.5*data->xaxis->titlewidth;
 
+   double color[3] = {0.0, 0.0, 0.0};
+   gtkplt_place_text(cr, data->xaxis->title,
+                     xpos, ypos, data->xaxis->titleangle,
+                     color, data->xaxis->titlefont, data->xaxis->titlefontsize);
+}
+
+void gtkplt_plot_draw_yaxis_title(cairo_t *cr, GtkPltPlotData *data) {
+   double xpos = gtkplt_yaxis_area_xmin(data) + 0.5*data->yaxis->titlewidth;
+   double ypos = 0.5*(gtkplt_yaxis_area_ymax(data) + gtkplt_yaxis_area_ymin(data));
+
+   double color[3] = {0.0, 0.0, 0.0};
+   gtkplt_place_text(cr, data->yaxis->title,
+                     xpos, ypos, data->yaxis->titleangle,
+                     color, data->yaxis->titlefont, data->yaxis->titlefontsize);
+}
+
+void gtkplt_plot_configure_axis_placement(cairo_t *cr, GtkPltPlotData *data) {
+   // set axis title height.
+   cairo_font_extents_t font_extent;
+   // x-axis
+   cairo_select_font_face(cr, data->xaxis->titlefont,
+                          CAIRO_FONT_SLANT_NORMAL,
+                          CAIRO_FONT_WEIGHT_NORMAL);
+   cairo_set_font_size(cr, data->xaxis->titlefontsize);
+   cairo_font_extents(cr, &font_extent);
+   data->xaxis->titlewidth = font_extent.height;
+
+   // y-axis
+   cairo_select_font_face(cr, data->yaxis->titlefont,
+                          CAIRO_FONT_SLANT_NORMAL,
+                          CAIRO_FONT_WEIGHT_NORMAL);
+   cairo_set_font_size(cr, data->yaxis->titlefontsize);
+   cairo_font_extents(cr, &font_extent);
+   data->yaxis->titlewidth = font_extent.height;
+   data->yaxis->titlelabeldist = 0.5*font_extent.height;
 }
 
 void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
@@ -230,6 +268,7 @@ void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
    // draw axis frame
    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
    cairo_set_line_width(cr, data->xaxis->linewidth);
+
    // top line
    cairo_move_to(cr, gtkplt_xaxis_area_xmin(data), gtkplt_yaxis_area_ymin(data));
    cairo_line_to(cr, gtkplt_xaxis_area_xmax(data), gtkplt_yaxis_area_ymin(data));
@@ -237,11 +276,13 @@ void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
    cairo_line_to(cr, gtkplt_xaxis_area_xmin(data), gtkplt_yaxis_area_ymax(data));
    cairo_close_path(cr);
 
-
-
    // dtaw ticks
    gtkplt_plot_draw_xaxis_majorticks(cr, data);
    gtkplt_plot_draw_yaxis_majorticks(cr, data);
+
+   // write title
+   gtkplt_plot_draw_xaxis_title(cr, data);
+   gtkplt_plot_draw_yaxis_title(cr, data);
 
    cairo_stroke(cr);
 }

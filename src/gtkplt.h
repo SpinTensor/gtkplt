@@ -10,21 +10,12 @@
 extern "C" {
 #endif // __cplusplus
 
-// Type structure to hold data for the plots
-enum gtkplt_en_orientation {
-   gtkplt_horizontal,
-   gtkplt_vertical_up,
-   gtkplt_vertical_down,
-   gtkplt_diagonal_up,
-   gtkplt_diagonal_down
-};
-
 typedef struct {
    double xpos, ypos;
    int fontsize;
    char *font;
    char *text;
-   enum gtkplt_en_orientation orientation;
+   double angle;
 } GtkPltPlotLabel;
 
 typedef struct {
@@ -95,11 +86,11 @@ typedef struct {
    char *title;
    char *titlefont;
    int titlefontsize;
-   enum gtkplt_en_orientation titleorientation;
+   double titleangle;
    // label
    char *labelfont;
    int labelfontsize;
-   enum gtkplt_en_orientation labelorientation;
+   double labelangle;
    // distances and measures
    double titlewidth;
    double titlelabeldist;

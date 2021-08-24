@@ -13,9 +13,11 @@
 GtkPltPlotData *gtkplt_init_plot() {
    GtkPltPlotData *plotdata_ptr = (GtkPltPlotData*) malloc(sizeof(GtkPltPlotData));
    plotdata_ptr->xaxis = gtkplt_axis_init();
-   plotdata_ptr->xaxis->labelorientation =  gtkplt_horizontal;
+   plotdata_ptr->xaxis->labelangle = 0.0;
+   plotdata_ptr->xaxis->titleangle = 0.0;
    plotdata_ptr->yaxis = gtkplt_axis_init();
-   plotdata_ptr->yaxis->labelorientation = gtkplt_vertical_up;
+   plotdata_ptr->yaxis->labelangle = 0.0;
+   plotdata_ptr->yaxis->titleangle = -0.5*G_PI;
    plotdata_ptr->PlotArea = gtkplt_plotarea_init();
    double default_margin = 5;
    plotdata_ptr->left_margin = default_margin;
