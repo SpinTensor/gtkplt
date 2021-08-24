@@ -29,11 +29,15 @@ double gtkplt_tbmargin_ymax(GtkPltPlotData *data) {
 
 void gtkplt_set_title(GtkPltPlot *plot, const char *title) {
    GtkPltPlotData *data = plot->data;
+   gtkplt_remove_title(plot);
    data->title = strdup(title);
 }
 
 void gtkplt_remove_title(GtkPltPlot *plot) {
    GtkPltPlotData *data = plot->data;
+   if (data->title != NULL) {
+      free(data->title);
+   }
    data->title = NULL;
 }
 

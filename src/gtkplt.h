@@ -11,7 +11,7 @@ extern "C" {
 #endif // __cplusplus
 
 // Type structure to hold data for the plots
-enum gtkplt_en_labelorientation {
+enum gtkplt_en_orientation {
    gtkplt_horizontal,
    gtkplt_vertical_up,
    gtkplt_vertical_down,
@@ -24,7 +24,7 @@ typedef struct {
    int fontsize;
    char *font;
    char *text;
-   enum gtkplt_en_labelorientation orientation;
+   enum gtkplt_en_orientation orientation;
 } GtkPltPlotLabel;
 
 typedef struct {
@@ -87,15 +87,25 @@ enum gtkplt_en_axisscale {
 
 typedef struct {
    enum gtkplt_en_axisscale scale;
+   int linewidth;
    int nmajorticks;
    int nminorticks;
    double range[2];
-   char *label;
+   // title
+   char *title;
+   char *titlefont;
+   int titlefontsize;
+   enum gtkplt_en_orientation titleorientation;
+   // label
    char *labelfont;
    int labelfontsize;
-   enum gtkplt_en_labelorientation labelorientation;
-   double axis_width;
-   double axis_label_dist;
+   enum gtkplt_en_orientation labelorientation;
+   // distances and measures
+   double titlewidth;
+   double titlelabeldist;
+   double labelwidth;
+   double labeltickdist;
+   double tickwidth;
 } GtkPltPlotAxis;
 
 typedef struct {
@@ -159,6 +169,16 @@ void gtkplt_set_title(GtkPltPlot *plot, const char *title);
 void gtkplt_remove_title(GtkPltPlot *plot);
 void gtkplt_set_title_font(GtkPltPlot *plot, const char *font);
 void gtkplt_set_title_fontsize(GtkPltPlot *plot, int fontsize);
+
+// Axis title appearance
+void gtkplt_set_xaxis_title(GtkPltPlot *plot, const char *title);
+void gtkplt_remove_xaxis_title(GtkPltPlot *plot);
+void gtkplt_set_xaxis_title_font(GtkPltPlot *plot, const char *title);
+void gtkplt_set_xaxis_title_fontsize(GtkPltPlot *plot, int fontsize);
+void gtkplt_set_yaxis_title(GtkPltPlot *plot, const char *title);
+void gtkplt_remove_yaxis_title(GtkPltPlot *plot);
+void gtkplt_set_yaxis_title_font(GtkPltPlot *plot, const char *title);
+void gtkplt_set_yaxis_title_fontsize(GtkPltPlot *plot, int fontsize);
 
 G_END_DECLS
 
