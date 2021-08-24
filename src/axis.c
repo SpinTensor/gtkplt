@@ -19,6 +19,7 @@ GtkPltPlotAxis *gtkplt_axis_init() {
    axis->titlefontsize = 18;
    axis->labelfont = strdup("Helvetica");
    axis->labelfontsize = 12;
+   axis->labelformat = strdup("%.1f");
    axis->titlewidth = 0.0;
    axis->titlelabeldist = 0.0;
    axis->labelwidth = 0.0;
@@ -144,6 +145,7 @@ void gtkplt_plot_draw_yaxis_minorticks(cairo_t *cr, GtkPltPlotData *data,
       cairo_move_to(cr, xminpos, y);
       cairo_line_to(cr, xmaxpos, y);
    }
+   cairo_stroke(cr);
 }
 
 void gtkplt_plot_draw_yaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
@@ -171,6 +173,7 @@ void gtkplt_plot_draw_yaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
       // minor ticks
       gtkplt_plot_draw_yaxis_minorticks(cr, data, y, y+tickspacing, xmaxpos);
    }
+   cairo_stroke(cr);
 }
 
 void gtkplt_plot_draw_xaxis_minorticks(cairo_t *cr, GtkPltPlotData *data,
@@ -190,6 +193,44 @@ void gtkplt_plot_draw_xaxis_minorticks(cairo_t *cr, GtkPltPlotData *data,
       cairo_move_to(cr, x, yminpos);
       cairo_line_to(cr, x, ymaxpos);
    }
+   cairo_stroke(cr);
+}
+void gtkplt_plot_draw_xaxis_label(cairo_t *cr, GtkPltPlotData *data) {
+   int nlabel = data->xaxis->nmajorticks;
+   double xminpos = gtkplt_xaxis_area_xmin(data);
+   double xmaxpos = gtkplt_xaxis_area_xmax(data);
+   double y = gtkplt_xaxis_area_ymax(data)
+              -data->xaxis->titlewidth 
+              -data->xaxis->titlelabeldist
+              -0.5*data->xaxis->labelwidth;
+
+   double labelspacing ;
+   labelspacing = xmaxpos - xminpos;
+   labelspacing /= nlabel - 1;
+
+   for (int ilabel=0; ilabel<nlabel; ilabel++) {
+      double x = xminpos + ilabel*labelspacing;
+
+      // create the label
+      double xvalue = 0.0;
+      xvalue += (nlabel-ilabel) * data->xaxis->range[0];
+      xvalue += ilabel * data->xaxis->range[1];
+      xvalue /= nlabel;
+      int labellen = snprintf(NULL, 0, data->xaxis->labelformat, xvalue);
+      labellen++; // null terminator
+      char *tmplabel = (char*) malloc(labellen*sizeof(char));
+      snprintf(tmplabel, labellen*sizeof(char),
+               data->xaxis->labelformat, xvalue);
+      double color[3] = {0.0, 0.0, 0.0};
+      gtkplt_place_text(cr, tmplabel,
+                        x,
+                        y,
+                        0.0,
+                        color,
+                        data->xaxis->labelfont,
+                        data->xaxis->labelfontsize);
+      free(tmplabel);
+   }
 }
 
 void gtkplt_plot_draw_xaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
@@ -208,6 +249,7 @@ void gtkplt_plot_draw_xaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
    cairo_set_line_width(cr, data->xaxis->tickwidth/3.0);
    cairo_set_line_cap(cr, CAIRO_LINE_CAP_SQUARE);
    for (int itick=0; itick<nticks; itick++) {
+      // draw the tick
       double x = xminpos + itick*tickspacing;
       cairo_move_to(cr, x, yminpos);
       cairo_line_to(cr, x, ymaxpos);
@@ -217,6 +259,7 @@ void gtkplt_plot_draw_xaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
       // minor ticks
       gtkplt_plot_draw_xaxis_minorticks(cr, data, x, x+tickspacing, yminpos);
    }
+   cairo_stroke(cr);
 }
 
 void gtkplt_plot_draw_xaxis_title(cairo_t *cr, GtkPltPlotData *data) {
@@ -258,6 +301,15 @@ void gtkplt_plot_configure_axis_placement(cairo_t *cr, GtkPltPlotData *data) {
    cairo_font_extents(cr, &font_extent);
    data->yaxis->titlewidth = font_extent.height;
    data->yaxis->titlelabeldist = 0.5*font_extent.height;
+
+   // set the label height
+   // x-axis
+   cairo_select_font_face(cr, data->xaxis->labelfont,
+                          CAIRO_FONT_SLANT_NORMAL,
+                          CAIRO_FONT_WEIGHT_NORMAL);
+   cairo_set_font_size(cr, data->xaxis->labelfontsize);
+   cairo_font_extents(cr, &font_extent);
+   data->xaxis->labelwidth = font_extent.height;
 }
 
 void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
@@ -275,14 +327,16 @@ void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
    cairo_line_to(cr, gtkplt_xaxis_area_xmax(data), gtkplt_yaxis_area_ymax(data));
    cairo_line_to(cr, gtkplt_xaxis_area_xmin(data), gtkplt_yaxis_area_ymax(data));
    cairo_close_path(cr);
+   cairo_stroke(cr);
 
    // dtaw ticks
    gtkplt_plot_draw_xaxis_majorticks(cr, data);
    gtkplt_plot_draw_yaxis_majorticks(cr, data);
 
+   // draw label
+   gtkplt_plot_draw_xaxis_label(cr, data);
+
    // write title
    gtkplt_plot_draw_xaxis_title(cr, data);
    gtkplt_plot_draw_yaxis_title(cr, data);
-
-   cairo_stroke(cr);
 }

@@ -89,6 +89,7 @@ typedef struct {
    double titleangle;
    // label
    char *labelfont;
+   char *labelformat;
    int labelfontsize;
    double labelangle;
    // distances and measures
