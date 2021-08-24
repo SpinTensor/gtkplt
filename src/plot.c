@@ -21,7 +21,7 @@ GtkPltPlotData *gtkplt_init_plot() {
    plotdata_ptr->PlotArea = gtkplt_plotarea_init();
    double default_margin = 5;
    plotdata_ptr->left_margin = default_margin;
-   plotdata_ptr->right_margin = default_margin;
+   plotdata_ptr->right_margin = 2*default_margin;
    plotdata_ptr->top_margin = default_margin;
    plotdata_ptr->bottom_margin = default_margin;
    plotdata_ptr->title = NULL;
