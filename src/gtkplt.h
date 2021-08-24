@@ -117,7 +117,8 @@ typedef struct {
    char *titlefont;
    int titlefontsize;
    double title_height;
-   double title_margin;
+   double title_tmargin;
+   double title_bmargin;
    double widget_width;
    double widget_height;
    GtkPltPlotPlotArea *PlotArea;

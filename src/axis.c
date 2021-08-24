@@ -218,7 +218,15 @@ void gtkplt_plot_draw_xaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
    }
 }
 
+void gtkplt_plot_configure_axis_placement(cairo_t *cr, GtkPltPlotData *data) {
+
+}
+
 void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
+   // first figure out where the axis should go.
+   // The placement of the x- and y-axis are codependent on each other.
+   gtkplt_plot_configure_axis_placement(cr, data);
+
    // draw axis frame
    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
    cairo_set_line_width(cr, data->xaxis->linewidth);
@@ -228,6 +236,7 @@ void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
    cairo_line_to(cr, gtkplt_xaxis_area_xmax(data), gtkplt_yaxis_area_ymax(data));
    cairo_line_to(cr, gtkplt_xaxis_area_xmin(data), gtkplt_yaxis_area_ymax(data));
    cairo_close_path(cr);
+
 
 
    // dtaw ticks

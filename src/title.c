@@ -1,5 +1,6 @@
 #include "gtkplt.h"
 #include "margins.h"
+#include "text.h"
 
 double gtkplt_ttmargin_xmin(GtkPltPlotData *data) {
    return gtkplt_olmargin_xmax(data);
@@ -11,7 +12,7 @@ double gtkplt_ttmargin_xmax(GtkPltPlotData *data) {
    return gtkplt_ormargin_xmin(data);
 }
 double gtkplt_ttmargin_ymax(GtkPltPlotData *data) {
-   return gtkplt_ttmargin_ymin(data) + data->title_margin;
+   return gtkplt_ttmargin_ymin(data) + data->title_tmargin;
 }
 
 double gtkplt_tbmargin_xmin(GtkPltPlotData *data) {
@@ -24,7 +25,7 @@ double gtkplt_tbmargin_xmax(GtkPltPlotData *data) {
    return gtkplt_ttmargin_xmax(data);
 }
 double gtkplt_tbmargin_ymax(GtkPltPlotData *data) {
-   return gtkplt_tbmargin_ymin(data) + data->title_margin;
+   return gtkplt_tbmargin_ymin(data) + data->title_bmargin;
 }
 
 void gtkplt_set_title(GtkPltPlot *plot, const char *title) {
@@ -57,30 +58,32 @@ void gtkplt_plot_draw_title(cairo_t *cr, GtkPltPlotData *data) {
       // no title
       // set title area to zero height
       data->title_height = 0;
-      data->title_margin = 0;
+      data->title_tmargin = 0;
+      data->title_bmargin = 0;
    } else {
       cairo_select_font_face(cr, data->titlefont,
                              CAIRO_FONT_SLANT_NORMAL,
-                             CAIRO_FONT_WEIGHT_BOLD);
+                             CAIRO_FONT_WEIGHT_NORMAL);
 
       cairo_set_font_size(cr, data->titlefontsize);
 
       // get the extent of the text about to displayed.
-      cairo_text_extents_t extents;
-      cairo_text_extents(cr, data->title, &extents);
+      //cairo_text_extents_t extents;
+      //cairo_text_extents(cr, data->title, &extents);
+      cairo_font_extents_t extents;
+      cairo_font_extents(cr, &extents);
 
       // set the title margin
-      data->title_margin = extents.height*0.5;
+      data->title_tmargin = 0.1*extents.height;
+      data->title_bmargin = 0.5*extents.height;
       // set the title height
       data->title_height = extents.height;
 
       double xcenter = 0.5*(gtkplt_ttmargin_xmin(data) + gtkplt_ttmargin_xmax(data));
       double ycenter = 0.5*(gtkplt_tbmargin_ymin(data) + gtkplt_ttmargin_ymax(data));
 
-      cairo_move_to(cr,
-                    xcenter - extents.width*0.5,
-                    ycenter + extents.height*0.25);
-      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-      cairo_show_text(cr, data->title);
+      double color[3] = {0.0, 0.0, 0.0};
+      gtkplt_place_text(cr, data->title, xcenter, ycenter, 0.0,
+                        color, data->titlefont, data->titlefontsize);
    }
 }

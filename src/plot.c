@@ -8,6 +8,7 @@
 #include "graphs.h"
 #include "margins.h"
 #include "title.h"
+#include "text.h"
 
 GtkPltPlotData *gtkplt_init_plot() {
    GtkPltPlotData *plotdata_ptr = (GtkPltPlotData*) malloc(sizeof(GtkPltPlotData));
@@ -25,7 +26,8 @@ GtkPltPlotData *gtkplt_init_plot() {
    plotdata_ptr->titlefont = strdup("Helvetica");
    plotdata_ptr->titlefontsize = 18;
    plotdata_ptr->title_height = 0;
-   plotdata_ptr->title_margin = 0;
+   plotdata_ptr->title_tmargin = 0;
+   plotdata_ptr->title_bmargin = 0;
 
    return plotdata_ptr;
 }
@@ -123,7 +125,6 @@ void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data) {
 
    // draw axis
    gtkplt_plot_draw_axis(cr, data);
-
 
 //   // draw graphs
 //   for (int i=0; i<1; i++) {
