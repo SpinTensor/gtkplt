@@ -18,6 +18,7 @@ void gtkplt_place_text(cairo_t *cr, const char *text,
    double nx = -0.5*extent.width;
    double ny = 0.5*font_extent.height;
 
+   cairo_save(cr);
    cairo_translate(cr, xpos, ypos);
    cairo_rotate(cr, angle);
    cairo_translate(cr, nx, ny);
