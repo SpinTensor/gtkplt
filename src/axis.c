@@ -233,6 +233,45 @@ void gtkplt_plot_draw_xaxis_label(cairo_t *cr, GtkPltPlotData *data) {
    }
 }
 
+void gtkplt_plot_draw_yaxis_label(cairo_t *cr, GtkPltPlotData *data) {
+   int nlabel = data->yaxis->nmajorticks;
+   double yminpos = gtkplt_yaxis_area_ymin(data);
+   double ymaxpos = gtkplt_yaxis_area_ymax(data);
+   double x = gtkplt_yaxis_area_xmin(data)
+              +data->yaxis->titlewidth
+              +data->yaxis->titlelabeldist
+              +0.5*data->yaxis->labelwidth;
+
+   double labelspacing ;
+   labelspacing = ymaxpos - yminpos;
+   labelspacing /= nlabel - 1;
+
+   for (int ilabel=0; ilabel<nlabel; ilabel++) {
+      double y = yminpos + ilabel*labelspacing;
+
+      // create the label
+      double yvalue = 0.0;
+      yvalue += (nlabel-ilabel) * data->yaxis->range[1];
+      yvalue += ilabel * data->yaxis->range[0];
+      yvalue /= nlabel;
+      int labellen = snprintf(NULL, 0, data->yaxis->labelformat, yvalue);
+      labellen++; // null terminator
+      char *tmplabel = (char*) malloc(labellen*sizeof(char));
+      snprintf(tmplabel, labellen*sizeof(char),
+               data->yaxis->labelformat, yvalue);
+      double color[3] = {0.0, 0.0, 0.0};
+      gtkplt_place_text(cr, tmplabel,
+                        x,
+                        y,
+                        0.0,
+                        color,
+                        data->yaxis->labelfont,
+                        data->yaxis->labelfontsize);
+      free(tmplabel);
+   }
+}
+
+
 void gtkplt_plot_draw_xaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
    // minimum is two ticks
    int nticks = data->xaxis->nmajorticks < 2 ? 2 : data->xaxis->nmajorticks;
@@ -310,6 +349,27 @@ void gtkplt_plot_configure_axis_placement(cairo_t *cr, GtkPltPlotData *data) {
    cairo_set_font_size(cr, data->xaxis->labelfontsize);
    cairo_font_extents(cr, &font_extent);
    data->xaxis->labelwidth = font_extent.height;
+   // y-axis
+   cairo_select_font_face(cr, data->yaxis->labelfont,
+                          CAIRO_FONT_SLANT_NORMAL,
+                          CAIRO_FONT_WEIGHT_NORMAL);
+   cairo_set_font_size(cr, data->yaxis->labelfontsize);
+   double textwidth[2];
+   for (int irange=0; irange<2; irange++) {
+      cairo_text_extents_t text_extent;
+      int labellen = snprintf(NULL, 0,
+                              data->yaxis->labelformat,
+                              data->yaxis->range[irange]);
+      labellen++; // null terminator
+      char *tmplabel = (char*) malloc(labellen*sizeof(char));
+      snprintf(tmplabel, labellen*sizeof(char),
+               data->yaxis->labelformat, data->yaxis->range[irange]);
+      cairo_text_extents(cr, tmplabel, &text_extent);
+      textwidth[irange] = text_extent.width;
+      free(tmplabel);
+   }
+   data->yaxis->labelwidth = textwidth[0] > textwidth[1] ? textwidth[0] : textwidth[1];
+   data->yaxis->labeltickdist = 3;
 }
 
 void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
@@ -335,6 +395,7 @@ void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
 
    // draw label
    gtkplt_plot_draw_xaxis_label(cr, data);
+   gtkplt_plot_draw_yaxis_label(cr, data);
 
    // write title
    gtkplt_plot_draw_xaxis_title(cr, data);
