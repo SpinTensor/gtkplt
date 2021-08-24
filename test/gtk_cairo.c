@@ -11,7 +11,7 @@ gboolean draw_callback(GtkWidget *widget, cairo_t *cr, gpointer data) {
     width = gtk_widget_get_allocated_width(widget);
     height = gtk_widget_get_allocated_height(widget);
     gtk_render_background(context, cr, 0, 0, width, height);
-    cairo_arc(cr, width/2.0, height/2.0, MIN(width, height) / 2.0, 0, 2 * G_PI);
+    cairo_arc(cr, width/2.0, height/2.0, 0.5*0.75*MIN(width, height), 0, 2 * G_PI);
     gdk_cairo_set_source_rgba(cr, &color);
     cairo_fill(cr);
     return FALSE;
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
    // Create the drawing area
    GtkDrawingArea *drawing_area = GTK_DRAWING_AREA(gtk_drawing_area_new());
    gtk_box_pack_start(box, GTK_WIDGET(drawing_area), TRUE, TRUE, 0);
-   gtk_widget_set_size_request(GTK_WIDGET(drawing_area), 200, 100);
+   gtk_widget_set_size_request(GTK_WIDGET(drawing_area), 100, 100);
    g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(draw_callback), NULL);
 
    if (auto_terminate) {
