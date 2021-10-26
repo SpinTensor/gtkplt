@@ -128,14 +128,14 @@ void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data) {
    // draw axis
    gtkplt_plot_draw_axis(cr, data);
 
-//   // draw graphs
-//   for (int i=0; i<1; i++) {
-//      if (data->PlotArea->graphs[i].valid) {
-//         gtkplt_plot_graph(cr,
-//                           data,
-//                           data->PlotArea->graphs+i);
-//      }
-//   }
+   // draw graphs
+   for (unsigned int i=0; i<data->PlotArea->ngraphs; i++) {
+      if (data->PlotArea->graphs[i].valid) {
+         gtkplt_plot_graph(cr,
+                           data,
+                           data->PlotArea->graphs+i);
+      }
+   }
 
    // draw legend
    

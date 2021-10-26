@@ -23,11 +23,13 @@ double gtkplt_ormargin_xmax(GtkPltPlotData *data);
 double gtkplt_ormargin_ymin(GtkPltPlotData *data);
 double gtkplt_ormargin_ymax(GtkPltPlotData *data);
 
+// title text margin
 double gtkplt_ttmargin_xmin(GtkPltPlotData *data);
 double gtkplt_ttmargin_ymin(GtkPltPlotData *data);
 double gtkplt_ttmargin_xmax(GtkPltPlotData *data);
 double gtkplt_ttmargin_ymax(GtkPltPlotData *data);
 
+// title box margin
 double gtkplt_tbmargin_xmin(GtkPltPlotData *data);
 double gtkplt_tbmargin_ymin(GtkPltPlotData *data);
 double gtkplt_tbmargin_xmax(GtkPltPlotData *data);

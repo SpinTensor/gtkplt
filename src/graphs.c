@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "axis.h"
 #include "gtkplt.h"
 
 GtkPltPlotGraph *gtkplt_graphs_init() {
@@ -86,21 +87,59 @@ unsigned int gtkplt_add_graph(GtkPltPlot *plot, int nvals,
 void gtkplt_plot_graph(cairo_t *cr, GtkPltPlotData *data,
                        GtkPltPlotGraph *graph) {
 
+   cairo_set_source_rgb(cr,
+                        graph->RGBcolor[0],
+                        graph->RGBcolor[1],
+                        graph->RGBcolor[2]);
+   // define plot area origin
+   // flip the y axis due to the
+   // draw origin beeing in the top left corner
+   double plotxmin = gtkplt_xaxis_area_xmin(data);
+   double plotxmax = gtkplt_xaxis_area_xmax(data);
+   double plotymin = gtkplt_yaxis_area_ymax(data);
+   double plotymax = gtkplt_yaxis_area_ymin(data);
+   // define the actual origin
+   double rxmin = data->xaxis->range[0];
+   double rxmax = data->xaxis->range[1];
+   double rymin = data->yaxis->range[0];
+   double rymax = data->yaxis->range[1];
 
+#ifdef _DEBUG
+printf("x e [%f,%f]\n", rxmin, rxmax);
+printf("y e [%f,%f]\n", rymin, rymax);
+#endif
    for (int i=0; i<graph->nvals; i++) {
-      double rx = data->widget_width/10.0*graph->xvals[i];
-      double ry = data->widget_height/10.0*graph->yvals[i];
-      cairo_set_source_rgb(cr,
-                           graph->RGBcolor[0],
-                           graph->RGBcolor[1],
-                           graph->RGBcolor[2]);
-                           
-      cairo_arc(cr,
-                rx, ry, // center coordinates
-                1, // radius
-                0, 2*G_PI);
-      cairo_stroke_preserve(cr);
-      cairo_fill(cr);
+#ifdef _DEBUG
+printf("plotting %d: f(%f) = %f\n", i, graph->xvals[i], graph->yvals[i]);
+#endif
+      // determine whether the point needs to be drawn
+      if (graph->xvals[i] >= rxmin && graph->xvals[i] <=rxmax &&
+          graph->yvals[i] >= rymin && graph->yvals[i] <=rymax) {
+         double plotx;
+         plotx  = graph->xvals[i] - rxmin;
+         plotx /= rxmax-rxmin;
+         plotx *= plotxmax-plotxmin;
+         plotx += plotxmin;
+         double ploty;
+         ploty  = graph->yvals[i] -rymin;
+         ploty /= rymax-rymin;
+         ploty *= plotymax-plotymin;
+         ploty += plotymin;
 
+         cairo_set_source_rgb(cr,
+                              graph->RGBcolor[0],
+                              graph->RGBcolor[1],
+                              graph->RGBcolor[2]);
+                              
+         cairo_move_to(cr, plotx, ploty);
+         cairo_arc(cr,
+                   plotx, ploty, // center coordinates
+                   1.0,          // radius
+                   0.0,          // starting angle
+                   2.0*G_PI      // ending angle
+                   );
+         cairo_stroke_preserve(cr);
+         cairo_fill(cr);
+      }
    }
 }

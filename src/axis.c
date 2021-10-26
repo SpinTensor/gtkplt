@@ -150,7 +150,8 @@ void gtkplt_plot_draw_yaxis_minorticks(cairo_t *cr, GtkPltPlotData *data,
 
 void gtkplt_plot_draw_yaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
    // minimum is two ticks
-   int nticks = data->yaxis->nmajorticks < 2 ? 2 : data->yaxis->nmajorticks;
+   data->yaxis->nmajorticks = data->yaxis->nmajorticks < 2 ? 2 : data->yaxis->nmajorticks;
+   int nticks = data->yaxis->nmajorticks;
 
    double yminpos = gtkplt_yaxis_area_ymin(data);
    double ymaxpos = gtkplt_yaxis_area_ymax(data);
@@ -212,10 +213,11 @@ void gtkplt_plot_draw_xaxis_label(cairo_t *cr, GtkPltPlotData *data) {
       double x = xminpos + ilabel*labelspacing;
 
       // create the label
-      double xvalue = 0.0;
-      xvalue += (nlabel-ilabel) * data->xaxis->range[0];
-      xvalue += ilabel * data->xaxis->range[1];
-      xvalue /= nlabel;
+      double xvalue;
+      xvalue = data->xaxis->range[1]-data->xaxis->range[0];
+      xvalue *= ilabel;
+      xvalue /= nlabel-1;
+      xvalue += data->xaxis->range[0];
       int labellen = snprintf(NULL, 0, data->xaxis->labelformat, xvalue);
       labellen++; // null terminator
       char *tmplabel = (char*) malloc(labellen*sizeof(char));
@@ -251,9 +253,10 @@ void gtkplt_plot_draw_yaxis_label(cairo_t *cr, GtkPltPlotData *data) {
 
       // create the label
       double yvalue = 0.0;
-      yvalue += (nlabel-ilabel) * data->yaxis->range[1];
-      yvalue += ilabel * data->yaxis->range[0];
-      yvalue /= nlabel;
+      yvalue = data->yaxis->range[1]-data->yaxis->range[0];
+      yvalue *= nlabel-1-ilabel;
+      yvalue /= nlabel-1;
+      yvalue += data->yaxis->range[0];
       int labellen = snprintf(NULL, 0, data->yaxis->labelformat, yvalue);
       labellen++; // null terminator
       char *tmplabel = (char*) malloc(labellen*sizeof(char));
@@ -274,7 +277,8 @@ void gtkplt_plot_draw_yaxis_label(cairo_t *cr, GtkPltPlotData *data) {
 
 void gtkplt_plot_draw_xaxis_majorticks(cairo_t *cr, GtkPltPlotData *data) {
    // minimum is two ticks
-   int nticks = data->xaxis->nmajorticks < 2 ? 2 : data->xaxis->nmajorticks;
+   data->xaxis->nmajorticks = data->xaxis->nmajorticks < 2 ? 2 : data->xaxis->nmajorticks;
+   int nticks = data->xaxis->nmajorticks;
 
    double xminpos = gtkplt_xaxis_area_xmin(data);
    double xmaxpos = gtkplt_xaxis_area_xmax(data);
