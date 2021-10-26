@@ -10,10 +10,12 @@ GtkPltPlotAxis *gtkplt_axis_init() {
    GtkPltPlotAxis *axis = (GtkPltPlotAxis*) malloc(sizeof(GtkPltPlotAxis));
    axis->scale = gtkplt_linear;
    axis->linewidth = 3.0;
-   axis->nmajorticks = 10;
+   axis->nmajorticks = 4;
    axis->nminorticks = 4;
    axis->range[0] = 0.0;
-   axis->range[1] = 10.0;
+   axis->range[1] = 0.0;
+   axis->autorange[0] = true;
+   axis->autorange[1] = true;
    axis->title = NULL;
    axis->titlefont = strdup("Helvetica");
    axis->titlefontsize = 18;
@@ -76,6 +78,34 @@ double gtkplt_yaxis_area_ymin(GtkPltPlotData *data) {
 }
 double gtkplt_yaxis_area_ymax(GtkPltPlotData *data) {
    return gtkplt_xaxis_area_ymin(data);
+}
+
+void gtkplt_set_xaxis_range(GtkPltPlot *plot, double *xmin_ptr, double *xmax_ptr) {
+   GtkPltPlotData *data = plot->data;
+   if (xmin_ptr == NULL) {
+      data->xaxis->autorange[0] = true;
+   } else {
+      data->xaxis->range[0] = *xmin_ptr;
+   }
+   if (xmax_ptr == NULL) {
+      data->xaxis->autorange[1] = true;
+   } else {
+      data->xaxis->range[1] = *xmax_ptr;
+   }
+}
+
+void gtkplt_set_yaxis_range(GtkPltPlot *plot, double *ymin_ptr, double *ymax_ptr) {
+   GtkPltPlotData *data = plot->data;
+   if (ymin_ptr == NULL) {
+      data->yaxis->autorange[0] = true;
+   } else {
+      data->yaxis->range[0] = *ymin_ptr;
+   }
+   if (ymax_ptr == NULL) {
+      data->yaxis->autorange[1] = true;
+   } else {
+      data->yaxis->range[1] = *ymax_ptr;
+   }
 }
 
 void gtkplt_set_xaxis_title(GtkPltPlot *plot, const char *title) {
@@ -404,4 +434,96 @@ void gtkplt_plot_draw_axis(cairo_t *cr, GtkPltPlotData *data) {
    // write title
    gtkplt_plot_draw_xaxis_title(cr, data);
    gtkplt_plot_draw_yaxis_title(cr, data);
+}
+
+void gtkplt_axis_autoranges(GtkPltPlotData *data, char axis_ident) {
+   GtkPltPlotAxis *axis = NULL;
+   if (axis_ident == 'x') {
+      axis = data->xaxis;
+   } else if (axis_ident == 'y') {
+      axis = data->yaxis;
+   } else {
+      fprintf(stderr, "undefined axis given: %s:%d\n", __FILE__, __LINE__);
+      abort();
+   }
+   if (axis->autorange[0]) {
+      if (axis->autorange[1]) {
+         // set default values
+         axis->range[0] = 0.0;
+         axis->range[1] = 1.0;
+         // combined search for min and max value
+         for (unsigned int i=0; i<data->PlotArea->ngraphs; i++) {
+            if (data->PlotArea->graphs[i].valid && data->PlotArea->graphs[i].nvals > 0) {
+               double *vals = NULL;
+               if (axis_ident == 'x') {
+                  vals = data-> PlotArea->graphs[i].xvals;
+               } else if (axis_ident == 'y') {
+                  vals = data-> PlotArea->graphs[i].yvals;
+               }
+               double maxval = vals[0];
+               double minval = vals[0];
+               for (int ival=1; ival<data->PlotArea->graphs[i].nvals; ival++) {
+                  if (maxval < vals[ival]) {
+                     maxval = vals[ival];
+                  } else if (minval > vals[ival]) {
+                     minval = vals[ival];
+                  }
+               }
+               axis->range[0] = minval;
+               axis->range[1] = maxval;
+#ifdef _DEBUG
+               printf("auto-%crange = [%f, %f]\n", axis_ident, minval, maxval);
+#endif
+            }
+         }
+      } else {
+         // set default values
+         axis->range[0] = axis->range[1] - 1.0;
+         // only search for min value
+         for (unsigned int i=0; i<data->PlotArea->ngraphs; i++) {
+            if (data->PlotArea->graphs[i].valid && data->PlotArea->graphs[i].nvals > 0) {
+               double *vals = NULL;
+               if (axis_ident == 'x') {
+                  vals =data-> PlotArea->graphs[i].xvals;
+               } else if (axis_ident == 'y') {
+                  vals =data-> PlotArea->graphs[i].yvals;
+               }
+               double minval = vals[0];
+               for (int ival=1; ival<data->PlotArea->graphs[i].nvals; ival++) {
+                  if (minval > vals[ival]) {
+                     minval = vals[ival];
+                  }
+               }
+               axis->range[0] = minval;
+#ifdef _DEBUG
+               printf("auto-%crange = [%f, NULL]\n", axis_ident, minval);
+#endif
+            }
+         }
+      }
+   } else if (axis->autorange[1]) {
+       // set default values
+       axis->range[1] = axis->range[0] + 1.0;
+      // only search for max value
+      for (unsigned int i=0; i<data->PlotArea->ngraphs; i++) {
+         if (data->PlotArea->graphs[i].valid && data->PlotArea->graphs[i].nvals > 0) {
+            double *vals = NULL;
+            if (axis_ident == 'x') {
+               vals =data-> PlotArea->graphs[i].xvals;
+            } else if (axis_ident == 'y') {
+               vals =data-> PlotArea->graphs[i].yvals;
+            }
+            double maxval = vals[0];
+            for (int ival=1; ival<data->PlotArea->graphs[i].nvals; ival++) {
+               if (maxval < vals[ival]) {
+                  maxval = vals[ival];
+               }
+            }
+            axis->range[1] = maxval;
+#ifdef _DEBUG
+            printf("auto-%crange = [NULL, %f]\n", axis_ident, maxval);
+#endif
+         }
+      }
+   }
 }

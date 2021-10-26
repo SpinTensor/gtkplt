@@ -82,6 +82,7 @@ typedef struct {
    int nmajorticks;
    int nminorticks;
    double range[2];
+   bool autorange[2];
    // title
    char *title;
    char *titlefont;

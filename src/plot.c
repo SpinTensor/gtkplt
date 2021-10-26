@@ -109,6 +109,10 @@ void gtkplt_plot_margins_debug(cairo_t *cr, GtkPltPlotData *data) {
 
 void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data) {
 
+   // if necessary determine ranges
+   gtkplt_axis_autoranges(data, 'x');
+   gtkplt_axis_autoranges(data, 'y');
+
    // set background to white
    cairo_set_source_rgba(cr,
                          1.0,
