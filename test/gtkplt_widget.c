@@ -21,14 +21,14 @@ int main(int argc,char *argv[]) {
    gtk_container_add(GTK_CONTAINER(window),
                      GTK_WIDGET(plot));
 
-   double xmin = -1.0;
-   double xmax = 6.0;
-   double dx = 0.5;
-   int nvals = (xmax-xmin) / dx + 0.5;
+   double xmin = -6.5 ;
+   double xmax = 6.5;
+   double dx = 0.1;
+   int nvals = (xmax-xmin) / dx + 0.5 + 1.0;
    double *xvals = (double*) malloc(nvals*sizeof(double));
    double *yvals = (double*) malloc(nvals*sizeof(double));
    for (int i=0; i<nvals; i++) {
-      xvals[i] = 0.5*i;
+      xvals[i] = dx*i+xmin;
       yvals[i] = sin(xvals[i]);
    }
    gtkplt_add_graph(plot, nvals, xvals, yvals);
