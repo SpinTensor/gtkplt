@@ -36,6 +36,9 @@ int main(int argc,char *argv[]) {
    xvals = NULL;
    free(yvals);
    yvals = NULL;
+   gtkplt_set_title(plot, "Titletext!");
+   gtkplt_set_xaxis_title(plot, "x-axis");
+   gtkplt_set_yaxis_title(plot, "y-axis");
 
    gtk_widget_set_size_request(GTK_WIDGET(plot), 480, 320);
    if (auto_terminate) {

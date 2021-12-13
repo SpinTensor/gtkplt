@@ -6,7 +6,9 @@ AM_LDFLAGS += @GTK_LIBS@ -rdynamic -lm
 
 check_PROGRAMS = gtk \
 		 gtk_cairo \
-		 gtkplt_widget
+		 gtkplt_widget \
+		 plot_title \
+		 axis_titles
 
 gtk_SOURCES = gtk.c
 gtk_CFLAGS = $(AM_CFLAGS)
@@ -20,9 +22,19 @@ gtkplt_widget_SOURCES = gtkplt_widget.c
 gtkplt_widget_CFLAGS = $(AM_CFLAGS)
 gtkplt_widget_LDFLAGS = $(AM_LDFLAGS)
 
+plot_title_SOURCES = plot_title.c
+plot_title_CFLAGS = $(AM_CFLAGS)
+plot_title_LDFLAGS = $(AM_LDFLAGS)
+
+axis_titles_SOURCES = axis_titles.c
+axis_titles_CFLAGS = $(AM_CFLAGS)
+axis_titles_LDFLAGS = $(AM_LDFLAGS)
+
 dist_noinst_SCRIPTS = gtk.sh \
 		      gtk_cairo.sh \
-		      gtkplt_widget.sh
+		      gtkplt_widget.sh \
+		      plot_title.sh \
+		      axis_titles.sh
 
 TEST_EXTENSIONS = .sh
 SH_LOG_COMPILER = $(SHELL)

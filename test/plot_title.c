@@ -36,6 +36,7 @@ int main(int argc,char *argv[]) {
    xvals = NULL;
    free(yvals);
    yvals = NULL;
+   gtkplt_set_title(plot, "Titletext!");
 
    gtk_widget_set_size_request(GTK_WIDGET(plot), 480, 320);
    if (auto_terminate) {
