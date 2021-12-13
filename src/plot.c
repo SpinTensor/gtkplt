@@ -109,9 +109,19 @@ void gtkplt_plot_margins_debug(cairo_t *cr, GtkPltPlotData *data) {
 
 void gtkplt_plot(cairo_t *cr, GtkPltPlotData *data) {
 
-   // if necessary determine ranges
-   gtkplt_axis_autoranges(data, 'x');
-   gtkplt_axis_autoranges(data, 'y');
+   // set axis ranges
+   if (data->xaxis->autorange[0]) {
+      data->xaxis->range[0] = data->xaxis->autorangevals[0];
+   }
+   if (data->xaxis->autorange[1]) {
+      data->xaxis->range[1] = data->xaxis->autorangevals[1];
+   }
+   if (data->yaxis->autorange[0]) {
+      data->yaxis->range[0] = data->yaxis->autorangevals[0];
+   }
+   if (data->yaxis->autorange[1]) {
+      data->yaxis->range[1] = data->yaxis->autorangevals[1];
+   }
 
    // set background to white
    cairo_set_source_rgba(cr,

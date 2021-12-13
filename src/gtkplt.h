@@ -83,6 +83,7 @@ typedef struct {
    int nminorticks;
    double range[2];
    bool autorange[2];
+   double autorangevals[2];
    // title
    char *title;
    char *titlefont;
@@ -173,6 +174,13 @@ void gtkplt_set_yaxis_title(GtkPltPlot *plot, const char *title);
 void gtkplt_remove_yaxis_title(GtkPltPlot *plot);
 void gtkplt_set_yaxis_title_font(GtkPltPlot *plot, const char *title);
 void gtkplt_set_yaxis_title_fontsize(GtkPltPlot *plot, int fontsize);
+
+// Axis scaling
+// passing null counts as activating
+void gtkplt_set_xaxis_range(GtkPltPlot *plot, double *xmin_ptr, double *xmax_ptr);
+void gtkplt_set_yaxis_range(GtkPltPlot *plot, double *ymin_ptr, double *ymax_ptr);
+void gtkplt_set_xaxis_autorange(GtkPltPlot *plot);
+void gtkplt_set_yaxis_autorange(GtkPltPlot *plot);
 
 G_END_DECLS
 

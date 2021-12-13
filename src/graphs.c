@@ -81,8 +81,63 @@ unsigned int gtkplt_add_graph(GtkPltPlot *plot, int nvals,
    graph->titlefontsize = 0.0;
    graph->show_in_legend = false;
 
+   // precompute the autoscale values
+   gtkplt_axis_autoranges(data, 'x');
+   gtkplt_axis_autoranges(data, 'y');
+
    return graph->ID;
 }
+
+//// remove a graph from the plot widget;
+//void gtkplt_remove_graph(GtkPltPlot *plot, unsigned int ID) {
+//   GtkPltPlotData *data = plot->data;
+//   GtkPltPlotPlotArea *plotarea = data->PlotArea;
+//
+//   // search for the 
+//   // TODO search for first invalid graph in all existing graphs and take that one
+//   if (plotarea->ngraphs == 0) {
+//      plotarea->ngraphs++;
+//      plotarea->graphs = (GtkPltPlotGraph*) malloc(sizeof(GtkPltPlotGraph));
+//   } else {
+//      plotarea->ngraphs++;
+//      plotarea->graphs = (GtkPltPlotGraph*)
+//                         realloc(plotarea->graphs,
+//                                 plotarea->ngraphs*sizeof(GtkPltPlotGraph));
+//   }
+//
+//   GtkPltPlotGraph *graph = plotarea->graphs + plotarea->ngraphs-1;
+//   graph->ID = plotarea->ngraphs-1;
+//   graph->valid = true;
+//   graph->nvals = nvals;
+//   graph->xvals = (double*) malloc(nvals*sizeof(double));
+//   for (int i=0; i<nvals; i++) {
+//      graph->xvals[i] = xvals[i];
+//   }
+//   graph->yvals = (double*) malloc(nvals*sizeof(double));
+//   for (int i=0; i<nvals; i++) {
+//      graph->yvals[i] = yvals[i];
+//   }
+//   graph->has_xerrvals = false;
+//   graph->xerrvals = NULL;
+//   graph->has_yerrvals = false;
+//   graph->yerrvals = NULL;
+//   graph->RGBcolor[0] = 1.0;
+//   graph->RGBcolor[1] = 0.0;
+//   graph->RGBcolor[2] = 0.0;
+//   graph->lineshape = gtkplt_solid;
+//   graph->linewidth = 2;
+//   graph->plottype = gtkplt_points;
+//   graph->title = NULL;
+//   graph->titlefont = NULL;
+//   graph->titlefontsize = 0.0;
+//   graph->show_in_legend = false;
+//
+//   // precompute the autoscale values
+//   gtkplt_axis_autoranges(data, 'x');
+//   gtkplt_axis_autoranges(data, 'y');
+//
+//   return graph->ID;
+//}
 
 void gtkplt_plot_graph(cairo_t *cr, GtkPltPlotData *data,
                        GtkPltPlotGraph *graph) {
