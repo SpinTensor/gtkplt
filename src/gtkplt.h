@@ -56,6 +56,7 @@ typedef struct {
    double RGBcolor[3];
    enum gtkplt_en_lineshape lineshape;
    unsigned char linewidth;
+   unsigned char pointsize;
    enum gtkplt_en_plottype plottype;
    char *title;
    char *titlefont;
@@ -181,6 +182,9 @@ void gtkplt_set_xaxis_range(GtkPltPlot *plot, double *xmin_ptr, double *xmax_ptr
 void gtkplt_set_yaxis_range(GtkPltPlot *plot, double *ymin_ptr, double *ymax_ptr);
 void gtkplt_set_xaxis_autorange(GtkPltPlot *plot);
 void gtkplt_set_yaxis_autorange(GtkPltPlot *plot);
+
+// Graph appearance
+void gtkplt_set_graph_type(GtkPltPlot *plot, unsigned int ID, const char *typestr);
 
 G_END_DECLS
 

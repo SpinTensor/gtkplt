@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #include "axis.h"
 #include "gtkplt.h"
@@ -75,6 +76,7 @@ unsigned int gtkplt_add_graph(GtkPltPlot *plot, int nvals,
    graph->RGBcolor[2] = 0.0;
    graph->lineshape = gtkplt_solid;
    graph->linewidth = 2;
+   graph->pointsize = 2;
    graph->plottype = gtkplt_points;
    graph->title = NULL;
    graph->titlefont = NULL;
@@ -139,8 +141,38 @@ unsigned int gtkplt_add_graph(GtkPltPlot *plot, int nvals,
 //   return graph->ID;
 //}
 
-void gtkplt_plot_graph(cairo_t *cr, GtkPltPlotData *data,
-                       GtkPltPlotGraph *graph) {
+void gtkplt_set_graph_type(GtkPltPlot *plot, unsigned int ID, const char *typestr) {
+   char *wtypestr = strdup(typestr);
+   for (int i=0; wtypestr[i]; i++) {
+      wtypestr[i] = tolower(wtypestr[i]);
+   }
+
+   GtkPltPlotData *data = plot->data;
+   GtkPltPlotGraph *graph = data->PlotArea->graphs+ID;
+
+   if (!strcmp(wtypestr, "point") || 
+       !strcmp(wtypestr, "pt") ||
+       !strcmp(wtypestr, "wp") ||
+       !strcmp(wtypestr, "points")) {
+      graph->plottype = gtkplt_points;
+   } else if (!strcmp(wtypestr, "line") ||
+              !strcmp(wtypestr, "ln") ||
+              !strcmp(wtypestr, "wl")) {
+      graph->plottype = gtkplt_line;
+   } else if (!strcmp(wtypestr, "linepoint") ||
+              !strcmp(wtypestr, "lpt") ||
+              !strcmp(wtypestr, "wlp") ||
+              !strcmp(wtypestr, "linepoints")) {
+      graph->plottype = gtkplt_linepoints;
+   } else if (!strcmp(wtypestr, "bar")) {
+      graph->plottype = gtkplt_bar;
+   }
+   free(wtypestr);
+}
+
+
+void gtkplt_plot_graph_points(cairo_t *cr, GtkPltPlotData *data,
+                              GtkPltPlotGraph *graph) {
 
    cairo_set_source_rgb(cr,
                         graph->RGBcolor[0],
@@ -196,5 +228,85 @@ printf("plotting %d: f(%f) = %f\n", i, graph->xvals[i], graph->yvals[i]);
          cairo_stroke_preserve(cr);
          cairo_fill(cr);
       }
+   }
+}
+
+void gtkplt_plot_graph_line(cairo_t *cr, GtkPltPlotData *data,
+                            GtkPltPlotGraph *graph) {
+
+   cairo_set_source_rgb(cr,
+                        graph->RGBcolor[0],
+                        graph->RGBcolor[1],
+                        graph->RGBcolor[2]);
+   // define plot area origin
+   // flip the y axis due to the
+   // draw origin beeing in the top left corner
+   double plotxmin = gtkplt_xaxis_area_xmin(data);
+   double plotxmax = gtkplt_xaxis_area_xmax(data);
+   double plotymin = gtkplt_yaxis_area_ymax(data);
+   double plotymax = gtkplt_yaxis_area_ymin(data);
+   // define the actual origin
+   double rxmin = data->xaxis->range[0];
+   double rxmax = data->xaxis->range[1];
+   double rymin = data->yaxis->range[0];
+   double rymax = data->yaxis->range[1];
+
+#ifdef _DEBUG
+printf("x e [%f,%f]\n", rxmin, rxmax);
+printf("y e [%f,%f]\n", rymin, rymax);
+#endif
+   cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+   cairo_set_line_width (cr, graph->linewidth);
+   double plotx_old = plotxmin+(plotxmax-plotxmin)*(graph->xvals[0] - rxmin)/(rxmax-rxmin);
+   double ploty_old = plotymin+(plotymax-plotymin)*(graph->yvals[0] - rymin)/(rymax-rymin);
+   for (int i=1; i<graph->nvals; i++) {
+#ifdef _DEBUG
+printf("plotting %d: f(%f) = %f\n", i, graph->xvals[i], graph->yvals[i]);
+#endif
+      // determine whether the point needs to be drawn
+      if (graph->xvals[i] >= rxmin && graph->xvals[i] <=rxmax &&
+          graph->yvals[i] >= rymin && graph->yvals[i] <=rymax) {
+         double plotx;
+         plotx  = graph->xvals[i] - rxmin;
+         plotx /= rxmax-rxmin;
+         plotx *= plotxmax-plotxmin;
+         plotx += plotxmin;
+         double ploty;
+         ploty  = graph->yvals[i] -rymin;
+         ploty /= rymax-rymin;
+         ploty *= plotymax-plotymin;
+         ploty += plotymin;
+
+         cairo_set_source_rgb(cr,
+                              graph->RGBcolor[0],
+                              graph->RGBcolor[1],
+                              graph->RGBcolor[2]);
+                              
+         cairo_move_to(cr, plotx_old, ploty_old);
+         cairo_line_to(cr, plotx, ploty);
+         cairo_stroke_preserve(cr);
+         cairo_fill(cr);
+         plotx_old = plotx;
+         ploty_old = ploty;
+      }
+   }
+}
+
+void gtkplt_plot_graph(cairo_t *cr, GtkPltPlotData *data,
+                       GtkPltPlotGraph *graph) {
+   switch (graph->plottype) {
+      case gtkplt_points:
+         gtkplt_plot_graph_points(cr, data, graph);
+         break;
+      case gtkplt_line:
+         gtkplt_plot_graph_line(cr, data, graph);
+         break;
+      case gtkplt_linepoints:
+         break;
+      case gtkplt_bar:
+         break;
+      default:
+         gtkplt_plot_graph_points(cr, data, graph);
+         break;
    }
 }
