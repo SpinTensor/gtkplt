@@ -186,6 +186,9 @@ void gtkplt_set_yaxis_autorange(GtkPltPlot *plot);
 // Graph appearance
 void gtkplt_set_graph_type(GtkPltPlot *plot, unsigned int ID, const char *typestr);
 
+// Data management
+void gtkplt_free_graph_data(GtkPltPlot *plot, unsigned int ID);
+
 G_END_DECLS
 
 #ifdef __cplusplus

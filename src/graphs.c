@@ -292,6 +292,19 @@ printf("plotting %d: f(%f) = %f\n", i, graph->xvals[i], graph->yvals[i]);
    }
 }
 
+void gtkplt_free_graph_data(GtkPltPlot *plot, unsigned int ID) {
+   GtkPltPlotData *data = plot->data;
+   GtkPltPlotGraph *graph = data->PlotArea->graphs+ID;
+   if (graph->xvals != NULL) {
+      free(graph->xvals);
+      graph->xvals = NULL;
+   }
+   if (graph->yvals != NULL) {
+      free(graph->yvals);
+      graph->yvals = NULL;
+   }
+}
+
 void gtkplt_plot_graph(cairo_t *cr, GtkPltPlotData *data,
                        GtkPltPlotGraph *graph) {
    switch (graph->plottype) {
