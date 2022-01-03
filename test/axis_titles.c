@@ -32,10 +32,6 @@ int main(int argc,char *argv[]) {
       yvals[i] = sin(xvals[i]);
    }
    gtkplt_add_graph(plot, nvals, xvals, yvals);
-   free(xvals);
-   xvals = NULL;
-   free(yvals);
-   yvals = NULL;
    gtkplt_set_title(plot, "Titletext!");
    gtkplt_set_xaxis_title(plot, "x-axis");
    gtkplt_set_yaxis_title(plot, "y-axis");
@@ -46,5 +42,11 @@ int main(int argc,char *argv[]) {
    }
    gtk_widget_show_all(GTK_WIDGET(window));
    gtk_main();
+
+   free(xvals);
+   xvals = NULL;
+   free(yvals);
+   yvals = NULL;
+
    return 0;
 }

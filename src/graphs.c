@@ -10,22 +10,6 @@ GtkPltPlotGraph *gtkplt_graphs_init() {
 }
 
 void gtkplt_graphs_finalize(GtkPltPlotGraph *graphs_ptr) {
-   if (graphs_ptr->xvals != NULL) {
-      free(graphs_ptr->xvals);
-      graphs_ptr->xvals = NULL;
-   }
-   if (graphs_ptr->yvals != NULL) {
-      free(graphs_ptr->yvals);
-      graphs_ptr->yvals = NULL;
-   }
-   if (graphs_ptr->has_xerrvals && graphs_ptr->xerrvals != NULL) {
-      free(graphs_ptr->xerrvals);
-      graphs_ptr->xerrvals = NULL;
-   }
-   if (graphs_ptr->has_yerrvals && graphs_ptr->yerrvals != NULL) {
-      free(graphs_ptr->yerrvals);
-      graphs_ptr->yerrvals = NULL;
-   }
    if (graphs_ptr->title != NULL) {
       free(graphs_ptr->title);
       graphs_ptr->title = NULL;
@@ -44,29 +28,29 @@ unsigned int gtkplt_add_graph(GtkPltPlot *plot, int nvals,
    GtkPltPlotData *data = plot->data;
    GtkPltPlotPlotArea *plotarea = data->PlotArea;
 
-   // TODO search for first invalid graph in all existing graphs and take that one
-   if (plotarea->ngraphs == 0) {
-      plotarea->ngraphs++;
-      plotarea->graphs = (GtkPltPlotGraph*) malloc(sizeof(GtkPltPlotGraph));
-   } else {
+   // search for a free spot
+   unsigned int newGraphID = -1;
+   bool freeGraph = false;
+   while (freeGraph == false && (newGraphID+1)<plotarea->ngraphs) {
+      newGraphID++;
+      freeGraph = (!plotarea->graphs[newGraphID].valid);
+   }
+
+   // if no free spot was found reallocate
+   if (!freeGraph) {
+      newGraphID = plotarea->ngraphs;
       plotarea->ngraphs++;
       plotarea->graphs = (GtkPltPlotGraph*)
                          realloc(plotarea->graphs,
                                  plotarea->ngraphs*sizeof(GtkPltPlotGraph));
    }
 
-   GtkPltPlotGraph *graph = plotarea->graphs + plotarea->ngraphs-1;
-   graph->ID = plotarea->ngraphs-1;
+   GtkPltPlotGraph *graph = plotarea->graphs + newGraphID;
+   graph->ID = newGraphID;
    graph->valid = true;
    graph->nvals = nvals;
-   graph->xvals = (double*) malloc(nvals*sizeof(double));
-   for (int i=0; i<nvals; i++) {
-      graph->xvals[i] = xvals[i];
-   }
-   graph->yvals = (double*) malloc(nvals*sizeof(double));
-   for (int i=0; i<nvals; i++) {
-      graph->yvals[i] = yvals[i];
-   }
+   graph->xvals = xvals;
+   graph->yvals = yvals;
    graph->has_xerrvals = false;
    graph->xerrvals = NULL;
    graph->has_yerrvals = false;
@@ -90,56 +74,28 @@ unsigned int gtkplt_add_graph(GtkPltPlot *plot, int nvals,
    return graph->ID;
 }
 
-//// remove a graph from the plot widget;
-//void gtkplt_remove_graph(GtkPltPlot *plot, unsigned int ID) {
-//   GtkPltPlotData *data = plot->data;
-//   GtkPltPlotPlotArea *plotarea = data->PlotArea;
-//
-//   // search for the 
-//   // TODO search for first invalid graph in all existing graphs and take that one
-//   if (plotarea->ngraphs == 0) {
-//      plotarea->ngraphs++;
-//      plotarea->graphs = (GtkPltPlotGraph*) malloc(sizeof(GtkPltPlotGraph));
-//   } else {
-//      plotarea->ngraphs++;
-//      plotarea->graphs = (GtkPltPlotGraph*)
-//                         realloc(plotarea->graphs,
-//                                 plotarea->ngraphs*sizeof(GtkPltPlotGraph));
-//   }
-//
-//   GtkPltPlotGraph *graph = plotarea->graphs + plotarea->ngraphs-1;
-//   graph->ID = plotarea->ngraphs-1;
-//   graph->valid = true;
-//   graph->nvals = nvals;
-//   graph->xvals = (double*) malloc(nvals*sizeof(double));
-//   for (int i=0; i<nvals; i++) {
-//      graph->xvals[i] = xvals[i];
-//   }
-//   graph->yvals = (double*) malloc(nvals*sizeof(double));
-//   for (int i=0; i<nvals; i++) {
-//      graph->yvals[i] = yvals[i];
-//   }
-//   graph->has_xerrvals = false;
-//   graph->xerrvals = NULL;
-//   graph->has_yerrvals = false;
-//   graph->yerrvals = NULL;
-//   graph->RGBcolor[0] = 1.0;
-//   graph->RGBcolor[1] = 0.0;
-//   graph->RGBcolor[2] = 0.0;
-//   graph->lineshape = gtkplt_solid;
-//   graph->linewidth = 2;
-//   graph->plottype = gtkplt_points;
-//   graph->title = NULL;
-//   graph->titlefont = NULL;
-//   graph->titlefontsize = 0.0;
-//   graph->show_in_legend = false;
-//
-//   // precompute the autoscale values
-//   gtkplt_axis_autoranges(data, 'x');
-//   gtkplt_axis_autoranges(data, 'y');
-//
-//   return graph->ID;
-//}
+// remove a graph from the plot widget;
+void gtkplt_remove_graph(GtkPltPlot *plot, unsigned int ID) {
+   GtkPltPlotData *data = plot->data;
+   GtkPltPlotPlotArea *plotarea = data->PlotArea;
+
+   if (ID < plotarea->ngraphs) {
+      GtkPltPlotGraph *graph = plotarea->graphs + ID;
+      if (graph->valid) {
+         graph->valid = false;
+         graph->nvals = 0;
+         graph->xvals = NULL;
+         graph->yvals = NULL;
+         graph->has_xerrvals = false;
+         graph->xerrvals = NULL;
+         graph->has_yerrvals = false;
+         graph->yerrvals = NULL;
+         free(graph->title);
+         graph->title = NULL;
+         free(graph->titlefont);
+      }
+   }
+}
 
 void gtkplt_set_graph_type(GtkPltPlot *plot, unsigned int ID, const char *typestr) {
    char *wtypestr = strdup(typestr);
@@ -302,6 +258,14 @@ void gtkplt_free_graph_data(GtkPltPlot *plot, unsigned int ID) {
    if (graph->yvals != NULL) {
       free(graph->yvals);
       graph->yvals = NULL;
+   }
+   if (graph->has_xerrvals && graph->xerrvals != NULL) {
+      free(graph->xerrvals);
+      graph->xerrvals = NULL;
+   }
+   if (graph->has_yerrvals && graph->yerrvals != NULL) {
+      free(graph->yerrvals);
+      graph->yerrvals = NULL;
    }
 }
 
