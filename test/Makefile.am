@@ -13,7 +13,8 @@ check_PROGRAMS = gtk \
 		 axis_scaling_half_auto \
 		 axis_scaling_auto \
 		 lineplot \
-		 lineplot2
+		 lineplot2 \
+		 linepointplot
 
 gtk_SOURCES = gtk.c
 gtk_CFLAGS = $(AM_CFLAGS)
@@ -55,6 +56,10 @@ lineplot2_SOURCES = lineplot2.c
 lineplot2_CFLAGS = $(AM_CFLAGS)
 lineplot2_LDFLAGS = $(AM_LDFLAGS)
 
+linepointplot_SOURCES = linepointplot.c
+linepointplot_CFLAGS = $(AM_CFLAGS)
+linepointplot_LDFLAGS = $(AM_LDFLAGS)
+
 dist_noinst_SCRIPTS = gtk.sh \
 		      gtk_cairo.sh \
 		      gtkplt_widget.sh \
@@ -64,7 +69,8 @@ dist_noinst_SCRIPTS = gtk.sh \
 		      axis_scaling_half_auto.sh \
 		      axis_scaling_auto.sh \
 		      lineplot.sh \
-		      lineplot2.sh
+		      lineplot2.sh \
+		      linepointplot.sh
 
 TEST_EXTENSIONS = .sh
 SH_LOG_COMPILER = $(SHELL)

@@ -407,6 +407,8 @@ void gtkplt_plot_graph(cairo_t *cr, GtkPltPlotData *data,
          gtkplt_plot_graph_line(cr, data, graph);
          break;
       case gtkplt_linepoints:
+         gtkplt_plot_graph_line(cr, data, graph);
+         gtkplt_plot_graph_points(cr, data, graph);
          break;
       case gtkplt_bar:
          break;

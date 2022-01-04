@@ -63,7 +63,7 @@ int main(int argc,char *argv[]) {
 
    double xvals8[] = {-1,11,11,-1,-1};
    double yvals8[] = {11,11,-1,-1,11};
-   unsigned int ID8 = gtkplt_add_graph(plot, 2, xvals8, yvals8);
+   unsigned int ID8 = gtkplt_add_graph(plot, 5, xvals8, yvals8);
    gtkplt_set_graph_type(plot, ID8, "wl");
 
    gtkplt_set_title(plot, "Titletext!");
