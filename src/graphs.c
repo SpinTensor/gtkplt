@@ -190,7 +190,6 @@ printf("plotting %d: f(%f) = %f\n", i, graph->xvals[i], graph->yvals[i]);
 
 void gtkplt_plot_graph_line(cairo_t *cr, GtkPltPlotData *data,
                             GtkPltPlotGraph *graph) {
-
    cairo_set_source_rgb(cr,
                         graph->RGBcolor[0],
                         graph->RGBcolor[1],
@@ -245,7 +244,6 @@ printf("plotting %d: (%f,%f) -> (%f,%f) ; (%s,%s,%s,%s) -> (%s,%s,%s,%s)\n", i,
       // four cases to consider
       if (inplot_old) {
          if (inplot_new) {
-            printf("old=in, new=in\n");
             cairo_set_source_rgb(cr,
                                  graph->RGBcolor[0],
                                  graph->RGBcolor[1],
@@ -255,7 +253,6 @@ printf("plotting %d: (%f,%f) -> (%f,%f) ; (%s,%s,%s,%s) -> (%s,%s,%s,%s)\n", i,
             cairo_stroke_preserve(cr);
             cairo_fill(cr);
          } else {
-            printf("old=in, new=out\n");
             double xs, ys;
             bool intersect;
             // check left yaxis for intersection
@@ -290,7 +287,6 @@ printf("plotting %d: (%f,%f) -> (%f,%f) ; (%s,%s,%s,%s) -> (%s,%s,%s,%s)\n", i,
          }
       } else {
          if (inplot_new) {
-            printf("old=out, new=in\n");
             double xs, ys;
             bool intersect;
             // check left yaxis for intersection
@@ -323,8 +319,7 @@ printf("plotting %d: (%f,%f) -> (%f,%f) ; (%s,%s,%s,%s) -> (%s,%s,%s,%s)\n", i,
             cairo_stroke_preserve(cr);
             cairo_fill(cr);
          } else {
-            printf("old=out, new=out\n");
-            double xs[2] = {0,0}, ys[2] = {0, 0};
+            double xs[4] = {0, 0, 0, 0}, ys[4] = {0, 0, 0, 0};
             bool intersect;
             int iinter = 0;
             // check left yaxis for intersection
@@ -339,18 +334,35 @@ printf("plotting %d: (%f,%f) -> (%f,%f) ; (%s,%s,%s,%s) -> (%s,%s,%s,%s)\n", i,
             // check the upper xaxis for intersection
             intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmin, rymax, rxmax, rymax, xs+iinter, ys+iinter);
             if (intersect) {iinter++;}
-printf("iinter = %d\n", iinter);
             if (iinter > 0) {
+               // in very rare edge cases there might be more than two axis crossings,
+               // like when the line passes exactly through a corner.
+               // select the two crossings which are the furthest apart.
+               double distsq = -1.0;
+               int iidx = 0;
+               int jidx = 1;
+               for (int i=0; i<iinter-1; i++) {
+                  for (int j=i+1; j<iinter; j++) {
+                     double dx = xs[i]-xs[j];
+                     double dy = ys[i]-ys[j];
+                     double tmpdstsq = dx*dx + dy*dy;
+                     if (tmpdstsq > distsq) {
+                        distsq = tmpdstsq;
+                        iidx = i;
+                        jidx = j;
+                     }
+                  }
+               }
+
                double plotxs[2], plotys[2];
-               plotxs[0] = plotxmin+(plotxmax-plotxmin)*(xs[0] - rxmin)/(rxmax-rxmin);
-               plotys[0] = plotymin+(plotymax-plotymin)*(ys[0] - rymin)/(rymax-rymin);
-               plotxs[1] = plotxmin+(plotxmax-plotxmin)*(xs[1] - rxmin)/(rxmax-rxmin);
-               plotys[1] = plotymin+(plotymax-plotymin)*(ys[1] - rymin)/(rymax-rymin);
+               plotxs[0] = plotxmin+(plotxmax-plotxmin)*(xs[iidx] - rxmin)/(rxmax-rxmin);
+               plotys[0] = plotymin+(plotymax-plotymin)*(ys[iidx] - rymin)/(rymax-rymin);
+               plotxs[1] = plotxmin+(plotxmax-plotxmin)*(xs[jidx] - rxmin)/(rxmax-rxmin);
+               plotys[1] = plotymin+(plotymax-plotymin)*(ys[jidx] - rymin)/(rymax-rymin);
                cairo_set_source_rgb(cr,
                                     graph->RGBcolor[0],
                                     graph->RGBcolor[1],
                                     graph->RGBcolor[2]);
-               printf("(%f,%f) -> (%f,%f)\n", xs[0], ys[0], xs[1], ys[1]);
                cairo_move_to(cr, plotxs[0], plotys[0]);
                cairo_line_to(cr, plotxs[1], plotys[1]);
                cairo_stroke_preserve(cr);
