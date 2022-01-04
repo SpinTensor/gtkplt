@@ -84,6 +84,9 @@ double gtkplt_yaxis_area_ymax(GtkPltPlotData *data) {
 
 void gtkplt_set_xaxis_range(GtkPltPlot *plot, double *xmin_ptr, double *xmax_ptr) {
    GtkPltPlotData *data = plot->data;
+   if (xmin_ptr == NULL || xmax_ptr == NULL) {
+      gtkplt_axis_autoranges(data, 'x');
+   }
    if (xmin_ptr == NULL) {
       data->xaxis->autorange[0] = true;
    } else {
@@ -100,6 +103,9 @@ void gtkplt_set_xaxis_range(GtkPltPlot *plot, double *xmin_ptr, double *xmax_ptr
 
 void gtkplt_set_yaxis_range(GtkPltPlot *plot, double *ymin_ptr, double *ymax_ptr) {
    GtkPltPlotData *data = plot->data;
+   if (ymin_ptr == NULL || ymax_ptr == NULL) {
+      gtkplt_axis_autoranges(data, 'y');
+   }
    if (ymin_ptr == NULL) {
       data->yaxis->autorange[0] = true;
    } else {
@@ -476,16 +482,18 @@ void gtkplt_axis_autoranges(GtkPltPlotData *data, char axis_ident) {
          double maxval = vals[0];
          double minval = vals[0];
          for (int ival=1; ival<data->PlotArea->graphs[i].nvals; ival++) {
-            if (maxval < vals[ival]) {
+            if (vals[ival] > maxval) {
                maxval = vals[ival];
-            } else if (minval > vals[ival]) {
+            }
+            if (vals[ival] < minval) {
                minval = vals[ival];
             }
          }
+         vals_init = true;
          if (!vals_init || minval < axis->autorangevals[0]) {
             axis->autorangevals[0] = minval;
          }
-         if (!vals_init || maxval < axis->autorangevals[1]) {
+         if (!vals_init || maxval > axis->autorangevals[1]) {
             axis->autorangevals[1] = maxval;
          }
 
