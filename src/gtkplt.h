@@ -189,6 +189,10 @@ void gtkplt_set_yaxis_autorange(GtkPltPlot *plot);
 // for linepoint plot: "linepoint", "lpt", "wlp", "linepoints"
 // for bar plot: "bar"
 void gtkplt_set_graph_type(GtkPltPlot *plot, unsigned int ID, const char *typestr);
+// red, gree, and blue are real values [0.0, 1.0]
+// negative values will be set to 0.0
+// values larger 1.0 will be set to 1.0
+void gtkplt_set_graph_color_rgb(GtkPltPlot *plot, unsigned int ID, double red, double green, double blue);
 
 // Data management
 void gtkplt_free_graph_data(GtkPltPlot *plot, unsigned int ID);

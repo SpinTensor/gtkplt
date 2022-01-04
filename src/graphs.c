@@ -127,6 +127,23 @@ void gtkplt_set_graph_type(GtkPltPlot *plot, unsigned int ID, const char *typest
    free(wtypestr);
 }
 
+void gtkplt_set_graph_color_rgb(GtkPltPlot *plot, unsigned int ID,
+                                double red, double green, double blue) {
+   GtkPltPlotData *data = plot->data;
+   GtkPltPlotGraph *graph = data->PlotArea->graphs+ID;
+   // restrict the values to [0.0, 1.0]
+   red = red > 1.0 ? 1.0 : red;
+   red = red < 0.0 ? 0.0 : red;
+   graph->RGBcolor[0] = red;
+
+   green = green > 1.0 ? 1.0 : green;
+   green = green < 0.0 ? 0.0 : green;
+   graph->RGBcolor[1] = green;
+
+   blue = blue > 1.0 ? 1.0 : blue;
+   blue = blue < 0.0 ? 0.0 : blue;
+   graph->RGBcolor[2] = blue;
+}
 
 void gtkplt_plot_graph_points(cairo_t *cr, GtkPltPlotData *data,
                               GtkPltPlotGraph *graph) {
