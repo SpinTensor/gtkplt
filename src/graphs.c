@@ -4,6 +4,7 @@
 
 #include "axis.h"
 #include "gtkplt.h"
+#include "geometry.h"
 
 GtkPltPlotGraph *gtkplt_graphs_init() {
    return NULL;
@@ -213,38 +214,153 @@ printf("y e [%f,%f]\n", rymin, rymax);
 #endif
    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
    cairo_set_line_width (cr, graph->linewidth);
+
+   // prepare first (old) point
    double plotx_old = plotxmin+(plotxmax-plotxmin)*(graph->xvals[0] - rxmin)/(rxmax-rxmin);
    double ploty_old = plotymin+(plotymax-plotymin)*(graph->yvals[0] - rymin)/(rymax-rymin);
+   bool inplot_old = graph->xvals[0] > rxmin &&
+                     graph->xvals[0] < rxmax &&
+                     graph->yvals[0] > rymin &&
+                     graph->yvals[0] < rymax;
    for (int i=1; i<graph->nvals; i++) {
+      double plotx_new = plotxmin+(plotxmax-plotxmin)*(graph->xvals[i] - rxmin)/(rxmax-rxmin);
+      double ploty_new = plotymin+(plotymax-plotymin)*(graph->yvals[i] - rymin)/(rymax-rymin);
+      bool inplot_new = graph->xvals[i] > rxmin &&
+                        graph->xvals[i] < rxmax &&
+                        graph->yvals[i] > rymin &&
+                        graph->yvals[i] < rymax;
 #ifdef _DEBUG
-printf("plotting %d: f(%f) = %f\n", i, graph->xvals[i], graph->yvals[i]);
+printf("plotting %d: (%f,%f) -> (%f,%f) ; (%s,%s,%s,%s) -> (%s,%s,%s,%s)\n", i,
+       graph->xvals[i-1], graph->yvals[i-1],
+       graph->xvals[i], graph->yvals[i],
+       graph->xvals[i-1] > rxmin ? "true" : "false",
+       graph->xvals[i-1] < rxmax ? "true" : "false",
+       graph->yvals[i-1] > rymin ? "true" : "false",
+       graph->yvals[i-1] < rymax ? "true" : "false",
+       graph->xvals[i] > rxmin ? "true" : "false",
+       graph->xvals[i] < rxmax ? "true" : "false",
+       graph->yvals[i] > rymin ? "true" : "false",
+       graph->yvals[i] < rymax ? "true" : "false");
 #endif
-      // determine whether the point needs to be drawn
-      if (graph->xvals[i] >= rxmin && graph->xvals[i] <=rxmax &&
-          graph->yvals[i] >= rymin && graph->yvals[i] <=rymax) {
-         double plotx;
-         plotx  = graph->xvals[i] - rxmin;
-         plotx /= rxmax-rxmin;
-         plotx *= plotxmax-plotxmin;
-         plotx += plotxmin;
-         double ploty;
-         ploty  = graph->yvals[i] -rymin;
-         ploty /= rymax-rymin;
-         ploty *= plotymax-plotymin;
-         ploty += plotymin;
+      // four cases to consider
+      if (inplot_old) {
+         if (inplot_new) {
+            printf("old=in, new=in\n");
+            cairo_set_source_rgb(cr,
+                                 graph->RGBcolor[0],
+                                 graph->RGBcolor[1],
+                                 graph->RGBcolor[2]);
+            cairo_move_to(cr, plotx_old, ploty_old);
+            cairo_line_to(cr, plotx_new, ploty_new);
+            cairo_stroke_preserve(cr);
+            cairo_fill(cr);
+         } else {
+            printf("old=in, new=out\n");
+            double xs, ys;
+            bool intersect;
+            // check left yaxis for intersection
+            intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmin, rymin, rxmin, rymax, &xs, &ys);
+            if (!intersect) {
+               // check right yaxis for intersection
+               intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmax, rymin, rxmax, rymax, &xs, &ys);
+               if (!intersect) {
+                  // check the lower xaxis for intersection
+                  intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmin, rymin, rxmax, rymin, &xs, &ys);
+                  if (!intersect) {
+                     // check the upper xaxis for intersection
+                     intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmin, rymax, rxmax, rymax, &xs, &ys);
+                     if (!intersect) {
+                        // never should get here
+                        fprintf(stderr, "Undefined behaviour in %s:%d ! No axis intersection found!\n", __FILE__, __LINE__);
+                     }
+                  }
+               }
+            }
+            double plotxs = plotxmin+(plotxmax-plotxmin)*(xs - rxmin)/(rxmax-rxmin);
+            double plotys = plotymin+(plotymax-plotymin)*(ys - rymin)/(rymax-rymin);
+            cairo_set_source_rgb(cr,
+                                 graph->RGBcolor[0],
+                                 graph->RGBcolor[1],
+                                 graph->RGBcolor[2]);
 
-         cairo_set_source_rgb(cr,
-                              graph->RGBcolor[0],
-                              graph->RGBcolor[1],
-                              graph->RGBcolor[2]);
-                              
-         cairo_move_to(cr, plotx_old, ploty_old);
-         cairo_line_to(cr, plotx, ploty);
-         cairo_stroke_preserve(cr);
-         cairo_fill(cr);
-         plotx_old = plotx;
-         ploty_old = ploty;
+            cairo_move_to(cr, plotxs, plotys);
+            cairo_line_to(cr, plotx_old, ploty_old);
+            cairo_stroke_preserve(cr);
+            cairo_fill(cr);
+         }
+      } else {
+         if (inplot_new) {
+            printf("old=out, new=in\n");
+            double xs, ys;
+            bool intersect;
+            // check left yaxis for intersection
+            intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmin, rymin, rxmin, rymax, &xs, &ys);
+            if (!intersect) {
+               // check right yaxis for intersection
+               intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmax, rymin, rxmax, rymax, &xs, &ys);
+               if (!intersect) {
+                  // check the lower xaxis for intersection
+                  intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmin, rymin, rxmax, rymin, &xs, &ys);
+                  if (!intersect) {
+                     // check the upper xaxis for intersection
+                     intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmin, rymax, rxmax, rymax, &xs, &ys);
+                     if (!intersect) {
+                        // never should get here
+                        fprintf(stderr, "Undefined behaviour in %s:%d ! No axis intersection found!\n", __FILE__, __LINE__);
+                     }
+                  }
+               }
+            }
+            double plotxs = plotxmin+(plotxmax-plotxmin)*(xs - rxmin)/(rxmax-rxmin);
+            double plotys = plotymin+(plotymax-plotymin)*(ys - rymin)/(rymax-rymin);
+            cairo_set_source_rgb(cr,
+                                 graph->RGBcolor[0],
+                                 graph->RGBcolor[1],
+                                 graph->RGBcolor[2]);
+
+            cairo_move_to(cr, plotxs, plotys);
+            cairo_line_to(cr, plotx_new, ploty_new);
+            cairo_stroke_preserve(cr);
+            cairo_fill(cr);
+         } else {
+            printf("old=out, new=out\n");
+            double xs[2] = {0,0}, ys[2] = {0, 0};
+            bool intersect;
+            int iinter = 0;
+            // check left yaxis for intersection
+            intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmin, rymin, rxmin, rymax, xs+iinter, ys+iinter);
+            if (intersect) {iinter++;}
+            // check right yaxis for intersection
+            intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmax, rymin, rxmax, rymax, xs+iinter, ys+iinter);
+            if (intersect) {iinter++;}
+            // check the lower xaxis for intersection
+            intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmin, rymin, rxmax, rymin, xs+iinter, ys+iinter);
+            if (intersect) {iinter++;}
+            // check the upper xaxis for intersection
+            intersect = gtkplt_linesegment_intersection(graph->xvals[i-1], graph->yvals[i-1], graph->xvals[i], graph->yvals[i], rxmin, rymax, rxmax, rymax, xs+iinter, ys+iinter);
+            if (intersect) {iinter++;}
+printf("iinter = %d\n", iinter);
+            if (iinter > 0) {
+               double plotxs[2], plotys[2];
+               plotxs[0] = plotxmin+(plotxmax-plotxmin)*(xs[0] - rxmin)/(rxmax-rxmin);
+               plotys[0] = plotymin+(plotymax-plotymin)*(ys[0] - rymin)/(rymax-rymin);
+               plotxs[1] = plotxmin+(plotxmax-plotxmin)*(xs[1] - rxmin)/(rxmax-rxmin);
+               plotys[1] = plotymin+(plotymax-plotymin)*(ys[1] - rymin)/(rymax-rymin);
+               cairo_set_source_rgb(cr,
+                                    graph->RGBcolor[0],
+                                    graph->RGBcolor[1],
+                                    graph->RGBcolor[2]);
+               printf("(%f,%f) -> (%f,%f)\n", xs[0], ys[0], xs[1], ys[1]);
+               cairo_move_to(cr, plotxs[0], plotys[0]);
+               cairo_line_to(cr, plotxs[1], plotys[1]);
+               cairo_stroke_preserve(cr);
+               cairo_fill(cr);
+            }
+         }
       }
+      plotx_old = plotx_new;
+      ploty_old = ploty_new;
+      inplot_old = inplot_new;
    }
 }
 

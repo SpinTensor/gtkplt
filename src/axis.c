@@ -10,8 +10,8 @@ GtkPltPlotAxis *gtkplt_axis_init() {
    GtkPltPlotAxis *axis = (GtkPltPlotAxis*) malloc(sizeof(GtkPltPlotAxis));
    axis->scale = gtkplt_linear;
    axis->linewidth = 3.0;
-   axis->nmajorticks = 4;
-   axis->nminorticks = 4;
+   axis->nmajorticks = 6;
+   axis->nminorticks = 6;
    axis->range[0] = 0.0;
    axis->range[1] = 0.0;
    axis->autorange[0] = true;
