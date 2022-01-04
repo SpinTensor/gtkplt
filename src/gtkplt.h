@@ -184,6 +184,10 @@ void gtkplt_set_xaxis_autorange(GtkPltPlot *plot);
 void gtkplt_set_yaxis_autorange(GtkPltPlot *plot);
 
 // Graph appearance
+// for point plot: "point", "pt", "wp", "points"
+// for line plot: "line", "ln", "wl"
+// for linepoint plot: "linepoint", "lpt", "wlp", "linepoints"
+// for bar plot: "bar"
 void gtkplt_set_graph_type(GtkPltPlot *plot, unsigned int ID, const char *typestr);
 
 // Data management
